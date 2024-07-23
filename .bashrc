@@ -12,6 +12,11 @@ PS1='[\h] ${PWD} > '
 # Read in my aliases as set in the file .aliases in my home directory
 source ~/.aliases
 
+# Home brew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+
+
 # was
 #export ROOTSYS=$HOME/root
 
@@ -84,6 +89,13 @@ export ForbiddenFruitPro=/Volumes/LaCie/Backups.backupdb/ForbiddenFruitPro/Lates
 if [ -f /usr/local/etc/bash_completion ]; then
     . /usr/local/etc/bash_completion
 fi
+
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion || {
+    # if not found in /usr/local/etc, try the brew --prefix location
+    [ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ] && \
+        . $(brew --prefix)/etc/bash_completion.d/git-completion.bash
+}
+
 
 #if [ -f ~/.git-completion.bash ]; then
 #  . ~/.git-completion.bash

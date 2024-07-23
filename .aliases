@@ -13,7 +13,7 @@ alias mv='mv -i'
 alias cp='cp -i'
 alias diff='colordiff'
 
-alias emacs='/usr/local/bin/emacs'
+#alias emacs='/usr/local/bin/emacs'
 alias emcas='emacs'
 alias eamcs='emacs'
 alias emasc='emacs'
