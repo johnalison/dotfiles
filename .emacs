@@ -2,20 +2,30 @@
       (cons "~/emacs"
 	    load-path))
 
+;;(setq load-path
+;;      (cons "~/lab/emacs"
+;;	    load-path))
+
+;(print load-path)
+
 (custom-set-variables
-  ;; custom-set-variables was added by Custom -- don't edit or cut/paste it!
-  ;; Your init file should contain only one such instance.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(auto-compression-mode t nil (jka-compr))
  '(case-fold-search t)
  '(current-language-environment "English")
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
- '(show-paren-mode t nil (paren))
+ '(package-selected-packages '(obsidian))
  '(ps-font-size 14)
-)
+ '(show-paren-mode t nil (paren)))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom -- don't edit or cut/paste it!
-  ;; Your init file should contain only one such instance.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 (global-set-key [S-iso-lefttab] 'dabbrev-expand)
@@ -219,7 +229,7 @@
 					;
 					; Testing
 ;(set-fill-column 200)
-
+;;;
 (define-minor-mode ospl-mode  "One Sentence Per Line"
   :init-value nil
   :lighter " ospl"
@@ -336,3 +346,53 @@ This unfills the paragraph, and places hard line breaks after each sentence."
     (delete-trailing-whitespace)))
 
 ;(add-hook 'before-save-hook 'my-remove-trailing-whitespace)
+
+; MELPA 
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+
+
+(load "~/lab/emacs/obsidian.el/obsidian.el")
+
+(require 'obsidian)
+(obsidian-specify-path "~/obsidian-notes/")
+;; If you want a different directory of `obsidian-capture':
+(setq obsidian-inbox-directory "0-inbox")
+;; Clicking on a wiki link referring a non-existing file the file can be
+;; created in the inbox (t) or next to the file with the link (nil).
+;; Default: t - creating in the inbox
+;(setq obsidian-wiki-link-create-file-in-inbox nil)
+;; You may want to define a folder for daily notes. By default it is the inbox.
+(setq obsidian-daily-notes-directory "Journal")
+;; Directory of note templates, unset (nil) by default
+(setq obsidian-templates-directory "templates")
+;; Daily Note template name - requires a template directory. Default: Daily Note Template.md
+(setq obsidian-daily-note-template "Daily Template.md")
+
+
+;; Define obsidian-mode bindings
+(add-hook
+ 'obsidian-mode-hook
+ (lambda ()
+   ;; Replace standard command with Obsidian.el's in obsidian vault:
+   (local-set-key (kbd "C-c o") 'obsidian-follow-link-at-point)
+
+   ;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
+   (local-set-key (kbd "C-c l") 'obsidian-insert-wikilink)
+
+   ;; Following backlinks
+   (local-set-key (kbd "C-c b") 'obsidian-backlink-jump)))
+
+;; Optionally you can also bind a few functions:
+;; replace "YOUR_BINDING" with the key of your choice:
+(global-set-key (kbd "C-c C-j") 'obsidian-jump)       ;; Opening a note
+(global-set-key (kbd "C-c C-n") 'obsidian-capture)    ;; Capturing a new note in the inbox
+(global-set-key (kbd "C-c d") 'obsidian-daily-note) ;; Creating daily note
+
+;; Activate detection of Obsidian vault
+(global-obsidian-mode t)
+ 
