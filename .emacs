@@ -18,7 +18,7 @@
  '(current-language-environment "English")
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
- '(package-selected-packages '(obsidian))
+ '(package-selected-packages '(company obsidian))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -345,7 +345,7 @@ This unfills the paragraph, and places hard line breaks after each sentence."
   (when (derived-mode-p 'python-mode 'emacs-lisp-mode)
     (delete-trailing-whitespace)))
 
-;(add-hook 'before-save-hook 'my-remove-trailing-whitespace)
+(add-hook 'before-save-hook 'remove-trailing-whitespace)
 
 ; MELPA 
 (require 'package)
@@ -356,7 +356,10 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 (package-initialize)
 
 
-(load "~/lab/emacs/obsidian.el/obsidian.el")
+;(load "~/lab/emacs/obsidian.el/obsidian.el")
+(add-to-list 'load-path "~/lab/emacs/obsidian.el")
+(add-to-list 'load-path "~/lab/emacs/markdown-mode")
+;(add-hook 'after-init-hook 'global-company-mode)
 
 (require 'obsidian)
 (obsidian-specify-path "~/obsidian-notes/")
@@ -389,8 +392,8 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 
 ;; Optionally you can also bind a few functions:
 ;; replace "YOUR_BINDING" with the key of your choice:
-(global-set-key (kbd "C-c C-j") 'obsidian-jump)       ;; Opening a note
-(global-set-key (kbd "C-c C-n") 'obsidian-capture)    ;; Capturing a new note in the inbox
+(global-set-key (kbd "C-c j") 'obsidian-jump)       ;; Opening a note
+(global-set-key (kbd "C-c n") 'obsidian-capture)    ;; Capturing a new note in the inbox
 (global-set-key (kbd "C-c d") 'obsidian-daily-note) ;; Creating daily note
 
 ;; Activate detection of Obsidian vault

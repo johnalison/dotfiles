@@ -95,9 +95,11 @@ alias set_prompt_norm="PS1='[\h] \${PWD} > '"
 #alias kinitCERNold='kinit johnda@CERN.CH'
 #alias kinitFNALold='bw get password cmslpc | pbcopy ; kinit jda102@FNAL.GOV'
 #alias kinitFNAL='bw get password cmslpc | pbcopy ; kinit jda102@FNAL.GOV; echo "Copied cmslpc ... DONE" | pbcopy '
-
 #alias kinitCERN='bw get password login.cern.ch | pbcopy ; kinit johnda@CERN.CH; echo "Copied lxplus ... DONE" | pbcopy '
+
 alias getCERN='bw get password login.cern.ch | pbcopy  '
+alias getFNAL='bw get password cmslpc | pbcopy  '
+
 #export dion=dionysus.hep.upenn.edu
 #alias ooffice='ooffice -nologo'
 #alias Atlantis='java -jar /home/johnda/AtlasWork/Atlacntis/AtlantisJava-09-11-28/atlantis.jar'
@@ -144,7 +146,7 @@ alias cleanroom3="echo pwd: cleanroom3 ; ssh pi@cleanroom3.wifi.cmu.edu"
 
 #alias pheno19="echo 8hm64qbj"
 #alias cms="open ~/Documents/CMSDetectorPaper.pdf"
-
+alias myzoom='echo https://cmu.zoom.us/j/4126571061 | pbcopy; echo "Copied zoom link"'
 
 
 
