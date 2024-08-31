@@ -48,7 +48,9 @@ export PYTHONSTARTUP=$HOME/.pythonrc.py
 #Sets the correct latex path
 #export afs=/afs/cern.ch/user/j/johnda/
 #export TEXINPUTS=./:/usr/local/texlive/2013/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
-export TEXINPUTS=./:/usr/local/texlive/2018/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
+#export TEXINPUTS=./:/usr/local/texlive/2018/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
+export TEXINPUTS=./:/usr/local/texlive/2024basic/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
+
 export PATH=$PATH:/Users/johnda/Library/Python/3.6/bin:/sbin:$ROOTSYS/bin:$HOME/AtlasWork/iStack:/usr/local/bin:/opt/X11/bin:/usr/local/root/bin:/usr/local/texbin:
 export PATH=$PATH:~/AWK/plotting/
 #export PATH=/usr/local/bin:$PATH:/sbin:$ROOTSYS/bin:$HOME/AtlasWork/iStack:/opt/X11/bin:/usr/local/root/bin

@@ -1,11 +1,13 @@
-#try:
-#    import readline
-#except ImportError:
-#    print "Module readline not available."
-#else:
-#    import rlcompleter
-#    readline.parse_and_bind("tab: complete")
-##readline support, if available
+try:
+    import readline
+    print("Imported readline")
+except ImportError:
+    print("Module readline not available.")
+else:
+    import rlcompleter
+    readline.parse_and_bind("tab: complete")
+    print("Imported rlcompleter")
+    #readline support, if available
 
 
 print("Ran: ~/.pythonrc.py")
@@ -26,33 +28,33 @@ import os.path
 ####    pass
 ####else:
 ####    import rlcompleter
-####    
+####
 ####    class IrlCompleter(rlcompleter.Completer):
 ####        """
 ####        This class enables a "tab" insertion if there's no text for
 ####        completion.
-####    
+####
 ####        The default "tab" is four spaces. You can initialize with '\t' as
 ####        the tab if you wish to use a genuine tab.
-####    
+####
 ####        """
-####    
+####
 ####        def __init__(self, tab='    '):
 ####            self.tab = tab
 ####            rlcompleter.Completer.__init__(self)
-####    
-####    
+####
+####
 ####        def complete(self, text, state):
 ####            if text == '':
 ####                readline.insert_text(self.tab)
 ####                return None
 ####            else:
 ####                return rlcompleter.Completer.complete(self,text,state)
-####    
-####    
+####
+####
 ####    #you could change this line to bind another key instead tab.
 ####    #readline.parse_and_bind ("bind ^I rl_complete")
-####    
+####
 ####    ##readline.parse_and_bind('tab: complete')
 ####    readline.set_completer(IrlCompleter('\t').complete)
 
@@ -68,7 +70,7 @@ else:
     else:
         readline.parse_and_bind("tab: complete")
 
-    
+
 # Restore our command-line history, and save it when Python exits.
 history_path = os.path.expanduser('~/pyhistory')
 if os.path.isfile(history_path):
@@ -132,7 +134,7 @@ atexit.register(lambda x=history_path: readline.write_history_file(x))
 #    print "eror gettign tab complete!"
 #    pass
 #
-####---------------The following is to get the history 
+####---------------The following is to get the history
 #
 #import atexit
 #import os
@@ -158,5 +160,3 @@ atexit.register(lambda x=history_path: readline.write_history_file(x))
 #        readline.write_history_file(historyPath)
 #atexit.register(save_history)
 #
-
-
