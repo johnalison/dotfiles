@@ -46,6 +46,7 @@
 (global-set-key "\M-n" 'forward-paragraph)
 (global-set-key "\M-p" 'backward-paragraph)
 ;(global-set-key "\M-v" 'scroll-up-command)
+(global-set-key (kbd "C-c r") 'revert-buffer-quick)
 
 (global-set-key "\M-?" 'help-command)
 
@@ -64,27 +65,27 @@
       (setq path (cons "" path)))
   (setq len (length path))
   (setq pkg (nth (- len 3) path))
-  
+
   (if (string-match "\\.h" filename)
       (progn
         (setcar (nthcdr (- len 2) path) "src")
         (setq tmppath (mapconcat 'identity path "/"))
         (string-match "\\.h" tmppath)
         (setq hpath (replace-match ".cxx" nil nil tmppath))))
-  
+
   (if (string-match "\\.cxx" filename)
       (progn
         (setcar (nthcdr (- len 2) path) pkg)
         (setq tmppath (mapconcat 'identity path "/"))
         (string-match "\\.cxx" tmppath)
         (setq hpath (replace-match ".h" nil nil tmppath))))
-  
+
   (find-file hpath))
 
 ;(set-default-font "-adobe-courier-bold-r-normal--14-100-100-100-m-90-iso10646-1")
 ;(set-default-font "-misc-fixed-medium-r-normal--13-100-100-100-c-70-iso8859-1")
 ;Get rid of welcome screen?
-;(setq inhibit-startup-echo-area-message t) 
+;(setq inhibit-startup-echo-area-message t)
 ;(setq initial-scratch-message nil)
 ;(setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
@@ -160,7 +161,7 @@
 ; Check buffer exists before switching there
 (defadvice switch-to-buffer (before existing-buffer
 				    activate compile)
-  "When interactive, swtich to existing buffers only, 
+  "When interactive, swtich to existing buffers only,
    unless given a prefex argument."
   (interactive
    (list (read-buffer "Switch to buffer: "
@@ -283,13 +284,13 @@ This unfills the paragraph, and places hard line breaks after each sentence."
         (backward-sentence)
         (forward-sentence)
         (set-marker end-of-paragraph (point)))
-      (forward-sentence) 
+      (forward-sentence)
       (while (< (point) end-of-paragraph)
         (just-one-space)
         (delete-backward-char 1)
         (newline)
         (forward-sentence))
-      (set-marker end-of-paragraph nil)))) 
+      (set-marker end-of-paragraph nil))))
 
 
 
@@ -347,7 +348,7 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 
 (add-hook 'before-save-hook 'remove-trailing-whitespace)
 
-; MELPA 
+; MELPA
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
@@ -398,4 +399,3 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 
 ;; Activate detection of Obsidian vault
 (global-obsidian-mode t)
- 

@@ -50,6 +50,7 @@ alias lxplus='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus.cern.ch'
 alias lxplus6='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus6.cern.ch'
 
 alias cmslpc='ssh -Y  jda102@cmslpc-el9.fnal.gov'
+alias cmslpc10200='ssh -XY -L  10200:localhost:10200 jda102@cmslpc-el9.fnal.gov'
 alias cmslpc-el9='ssh -Y  jda102@cmslpc-el9.fnal.gov'
 alias cmslpc6='ssh -Y  jda102@cmslpc-sl6.fnal.gov'
 alias cmslpc7='ssh -Y  jda102@cmslpc-sl7.fnal.gov'
@@ -162,5 +163,7 @@ alias makePlot="source ~/AWK/plotting/makePlot.sh"
 alias vera="ssh alison@vera.psc.edu"
 
 alias calc="~/print_python.sh"
+
+alias falcon="ssh jalison@falcon.phys.cmu.edu"
 
 source ~/.aliases_local
