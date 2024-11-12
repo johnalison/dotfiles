@@ -49,7 +49,10 @@ export PYTHONSTARTUP=$HOME/.pythonrc.py
 #export afs=/afs/cern.ch/user/j/johnda/
 #export TEXINPUTS=./:/usr/local/texlive/2013/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
 #export TEXINPUTS=./:/usr/local/texlive/2018/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
-export TEXINPUTS=./:/usr/local/texlive/2024basic/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
+#export TEXINPUTS=./:/usr/local/texlive/2024basic/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles:/opt/homebrew/Cellar/texlive/20240312_3/bin/tex
+#export TEXINPUTS=./:/usr/local/texlive/2024/texmf-dist/tex/:/Users/johnda/papers/latexBaseFiles:/opt/homebrew/Cellar/texlive/20240312_3/bin/tex
+## export TEXINPUTS=./:/usr/local/texlive/2024/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles:/opt/homebrew/Cellar/texlive/20240312_3/bin/tex/:/opt/homebrew/bin/pdflatex/:/usr/local/texlive/2024/texmf-dist/tex/latex//
+export TEXINPUTS=./:/usr/local/texlive/2024/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
 
 export PATH=$PATH:/Users/johnda/Library/Python/3.6/bin:/sbin:$ROOTSYS/bin:$HOME/AtlasWork/iStack:/usr/local/bin:/opt/X11/bin:/usr/local/root/bin:/usr/local/texbin:
 export PATH=$PATH:~/AWK/plotting/
