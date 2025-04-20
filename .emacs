@@ -18,7 +18,7 @@
  '(current-language-environment "English")
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
- '(package-selected-packages '(company obsidian))
+ '(package-selected-packages '(company gptel gptel-quick obsidian))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -28,10 +28,11 @@
  ;; If there is more than one, they won't work right.
  )
 
-(global-set-key [S-iso-lefttab] 'dabbrev-expand)
-(global-set-key "\M-z" 'dabbrev-expand)
+
+;(global-set-key [S-iso-lefttab] 'dabbrev-expand)
+;(global-set-key "\M-z" 'dabbrev-expand)
 (global-set-key (kbd "<backtab>") 'dabbrev-expand)
-(global-set-key "\e[Z" 'dabbrev-expand)
+;(global-set-key "\e[Z" 'dabbrev-expand)
 
 (add-hook 'python-mode-hook
           (lambda () (define-key python-mode-map [backtab] 'dabbrev-expand)))
@@ -399,3 +400,89 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 
 ;; Activate detection of Obsidian vault
 (global-obsidian-mode t)
+
+;; Setting up copilot
+(add-to-list 'load-path "~/emacs/copilot.el")
+(require 'editorconfig)
+(require 'copilot)
+(add-hook 'prog-mode-hook 'copilot-mode)
+(define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
+(setq warning-suppress-types '((copilot)))
+
+
+; Setting up gptel
+(add-to-list 'load-path "~/emacs/gptel")
+(use-package gptel
+  :ensure t
+  :config
+  ;; either hard‑code it (not recommended for shared configs):
+  ;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
+
+  ;; or, read from your shell’s env var:
+  (setq gptel-api-key (getenv "OPENAI_API_KEY")))
+
+(global-set-key (kbd "C-c RET") 'gptel-send)
+(global-set-key (kbd "C-c m") 'gptel-menu)
+
+
+(defun gptel-send-with-options (&optional arg)
+  "Send query.  With prefix ARG open gptel's menu instead."
+  (interactive "P")
+  (if arg
+      (call-interactively 'gptel-menu)
+    (gptel--suffix-send (transient-args 'gptel-menu))))
+
+(global-set-key (kbd "C-c g") #'my-gptel-send-via-minibuffer-and-echo)
+
+;(defun my-gptel-send-via-minibuffer-and-echo ()
+;  "Read a GPTel prompt from the minibuffer and echo the reply."
+;  (interactive)
+;  ;; Tell gptel--suffix-send to behave as if you hit `m` then `e`
+;  (let ((transient-current-command 'gptel-menu))
+;    (gptel--suffix-send '("m" "e"))))
+
+(add-to-list 'load-path "~/emacs/gptel-quick/")
+
+
+;;; --- web‑search tool for GPT‑el -------------------------------
+(require 'gptel)                 ; make sure the package is loaded
+(require 'json)                  ; we parse a tiny JSON blob
+
+(defun my/gptel-duck-search (query &optional max)
+  "Return MAX (default‑5) DuckDuckGo instant‑answer hits for QUERY."
+  (let* ((max   (or max 5))
+         (url   (format "https://api.duckduckgo.com/?q=%s&format=json&no_redirect=1&no_html=1"
+                        (url-hexify-string query)))
+         (buf   (url-retrieve-synchronously url t t 10)))
+    (unless buf (error "duckduckgo request failed"))
+    (with-current-buffer buf
+      (goto-char url-http-end-of-headers)
+      (let* ((json-object-type 'alist)
+             (json (json-read))
+             (hits (alist-get 'RelatedTopics json)))
+        (mapconcat
+         (lambda (h)
+           (when-let* ((txt (alist-get 'Text h))
+                       (url (alist-get 'FirstURL h)))
+             (format "- %s\n  %s" txt url)))
+         (seq-take hits max) "\n\n")))))
+
+(defvar my/gptel-web-search-tool
+  (gptel-make-tool
+   :name "web_search"
+   :description "Search DuckDuckGo and return the top plain‑text results."
+   :function #'my/gptel-duck-search
+   :args (list '(:name "query"        :type string  :description "Search query")
+               '(:name "max_results"  :type integer :optional t
+                        :description "How many results to return (≤ 10)"))
+   :category "web"))
+
+;; Make it available everywhere.  If you only want it in specific buffers,
+;; call `gptel-select-tools' instead of touching the global var.
+(add-to-list 'gptel-tools my/gptel-web-search-tool)
+
+;; Optional defaults
+(setq gptel-use-tools t                 ; allow tool use by default
+      gptel-confirm-tool-calls nil        ; ask before each invocation
+      gptel-include-tool-results nil)     ; echo results back to the model

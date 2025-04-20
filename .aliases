@@ -151,7 +151,7 @@ alias myzoom='echo https://cmu.zoom.us/j/4126571061 | pbcopy; echo "Copied zoom 
 
 
 
-alias scpEOS="python3 ~/scpEOS.py"
+alias scpEOS="python3 ~/lab/python/scpEOS.py"
 
 alias tarxzf="tar -xzf "
 
@@ -163,7 +163,9 @@ alias makePlot="source ~/AWK/plotting/makePlot.sh"
 alias vera="ssh alison@vera.psc.edu"
 
 alias calc="~/print_python.sh"
+alias lsDown="ls -lrt ~/Downloads | tail"
 
 alias falcon="ssh jalison@falcon.phys.cmu.edu"
+alias falcon10200="ssh -XY -L  10200:localhost:10200 jalison@falcon.phys.cmu.edu"
 
 source ~/.aliases_local
