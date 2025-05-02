@@ -2,11 +2,93 @@
       (cons "~/emacs"
 	    load-path))
 
-;;(setq load-path
-;;      (cons "~/lab/emacs"
-;;	    load-path))
+;; Simplify the UI
+(setq inhibit-startup-message t)
+(scroll-bar-mode -1)        ; Disable visible scrollbar
+(tool-bar-mode -1)          ; Disable the toolbar
+(tooltip-mode -1)           ; Disable tooltips
+(set-fringe-mode 10)        ; Give some breathing room
+(menu-bar-mode -1)            ; Disable the menu bar
 
-;(print load-path)
+
+;; Set up the visible bell
+;;(setq visible-bell nil)
+(setq ring-bell-function 'ignore)
+(setq save-interprogram-paste-before-kill t)
+(setq select-enable-clipboard t)
+					;(setq select-enable-clipboard t)
+
+
+
+; MELPA
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+;(add-to-list 'load-path "~/.emacs.d/site-lisp")
+
+
+
+
+
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+;(unless package-archive-contents
+;  (package-refresh-contents))
+;
+;(package-initialize)
+;(unless package-archive-contents
+; (package-refresh-contents))
+;
+;;; Initialize use-package on non-Linux platforms
+;(unless (package-installed-p 'use-package)
+;   (package-install 'use-package))
+;
+;(require 'use-package)
+;(setq use-package-always-ensure t)
+
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
+
+;(use-package counsel
+;  :bind (("M-x" . counsel-M-x)
+;         ("C-x b" . counsel-ibuffer)
+;         ("C-x C-f" . counsel-find-file)
+;         :map minibuffer-local-map
+;         ("C-r" . 'counsel-minibuffer-history)))
+
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -18,7 +100,10 @@
  '(current-language-environment "English")
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
- '(package-selected-packages '(company gptel gptel-quick obsidian))
+ '(package-selected-packages
+   '(company counsel elgrep f gptel-quick ivy marginalia org-bullets
+	     org-modern org-roam  vertico
+	     visual-fill-column yaml))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -38,6 +123,7 @@
           (lambda () (define-key python-mode-map [backtab] 'dabbrev-expand)))
 
 (global-set-key "\C-h" 'delete-backward-char)
+(global-set-key (kbd "C-?") 'help-command)
 (global-set-key "\M-h" 'backward-kill-word)
 (global-set-key "\M-w" 'ispell-word)
 (global-set-key "\M-#" 'ispell-region)
@@ -89,7 +175,7 @@
 ;(setq inhibit-startup-echo-area-message t)
 ;(setq initial-scratch-message nil)
 ;(setq inhibit-splash-screen t)
-(setq inhibit-startup-message t)
+
 
 ;turn off the backup files
 (setq make-backup-files nil)
@@ -302,8 +388,8 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 (global-set-key "\C-x\C-kL" 'combine-lines)
 
 ;; Twikis
-(load "~/emacs/emacs-twiki-mode/twiki.el")
-(add-to-list 'auto-mode-alist'("\\.twiki$" . twiki-mode))
+;(load "~/emacs/emacs-twiki-mode/twiki.el")
+;(add-to-list 'auto-mode-alist'("\\.twiki$" . twiki-mode))
 
 
 ;(fset 'copy-to-clipboard-old
@@ -349,57 +435,51 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 
 (add-hook 'before-save-hook 'remove-trailing-whitespace)
 
-; MELPA
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
+
 
 
 ;(load "~/lab/emacs/obsidian.el/obsidian.el")
-(add-to-list 'load-path "~/lab/emacs/obsidian.el")
-(add-to-list 'load-path "~/lab/emacs/markdown-mode")
+;(add-to-list 'load-path "~/lab/emacs/obsidian.el")
+;(add-to-list 'load-path "~/lab/emacs/markdown-mode")
 ;(add-hook 'after-init-hook 'global-company-mode)
 
-(require 'obsidian)
-(obsidian-specify-path "~/obsidian-notes/")
-;; If you want a different directory of `obsidian-capture':
-(setq obsidian-inbox-directory "0-inbox")
-;; Clicking on a wiki link referring a non-existing file the file can be
-;; created in the inbox (t) or next to the file with the link (nil).
-;; Default: t - creating in the inbox
-;(setq obsidian-wiki-link-create-file-in-inbox nil)
-;; You may want to define a folder for daily notes. By default it is the inbox.
-(setq obsidian-daily-notes-directory "Journal")
-;; Directory of note templates, unset (nil) by default
-(setq obsidian-templates-directory "templates")
-;; Daily Note template name - requires a template directory. Default: Daily Note Template.md
-(setq obsidian-daily-note-template "Daily Template.md")
+; (require 'obsidian)
+; (obsidian-specify-path "~/obsidian-notes/")
+; ;; If you want a different directory of `obsidian-capture':
+; (setq obsidian-inbox-directory "0-inbox")
+; ;; Clicking on a wiki link referring a non-existing file the file can be
+; ;; created in the inbox (t) or next to the file with the link (nil).
+; ;; Default: t - creating in the inbox
+; ;(setq obsidian-wiki-link-create-file-in-inbox nil)
+; ;; You may want to define a folder for daily notes. By default it is the inbox.
+; (setq obsidian-daily-notes-directory "Journal")
+; ;; Directory of note templates, unset (nil) by default
+; (setq obsidian-templates-directory "templates")
+; ;; Daily Note template name - requires a template directory. Default: Daily Note Template.md
+; (setq obsidian-daily-note-template "Daily Template.md")
 
 
 ;; Define obsidian-mode bindings
-(add-hook
- 'obsidian-mode-hook
- (lambda ()
-   ;; Replace standard command with Obsidian.el's in obsidian vault:
-   (local-set-key (kbd "C-c o") 'obsidian-follow-link-at-point)
-
-   ;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
-   (local-set-key (kbd "C-c l") 'obsidian-insert-wikilink)
-
-   ;; Following backlinks
-   (local-set-key (kbd "C-c b") 'obsidian-backlink-jump)))
-
-;; Optionally you can also bind a few functions:
-;; replace "YOUR_BINDING" with the key of your choice:
-(global-set-key (kbd "C-c j") 'obsidian-jump)       ;; Opening a note
-(global-set-key (kbd "C-c n") 'obsidian-capture)    ;; Capturing a new note in the inbox
-(global-set-key (kbd "C-c d") 'obsidian-daily-note) ;; Creating daily note
-
-;; Activate detection of Obsidian vault
-(global-obsidian-mode t)
+;(add-hook
+; 'obsidian-mode-hook
+; (lambda ()
+;   ;; Replace standard command with Obsidian.el's in obsidian vault:
+;   (local-set-key (kbd "C-c o") 'obsidian-follow-link-at-point)
+;
+;   ;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
+;   (local-set-key (kbd "C-c l") 'obsidian-insert-wikilink)
+;
+;   ;; Following backlinks
+;   (local-set-key (kbd "C-c b") 'obsidian-backlink-jump)))
+;
+;;; Optionally you can also bind a few functions:
+;;; replace "YOUR_BINDING" with the key of your choice:
+;(global-set-key (kbd "C-c j") 'obsidian-jump)       ;; Opening a note
+;(global-set-key (kbd "C-c n") 'obsidian-capture)    ;; Capturing a new note in the inbox
+;(global-set-key (kbd "C-c d") 'obsidian-daily-note) ;; Creating daily note
+;
+;;; Activate detection of Obsidian vault
+;(global-obsidian-mode t)
 
 ;; Setting up copilot
 (add-to-list 'load-path "~/emacs/copilot.el")
@@ -486,3 +566,73 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 (setq gptel-use-tools t                 ; allow tool use by default
       gptel-confirm-tool-calls nil        ; ask before each invocation
       gptel-include-tool-results nil)     ; echo results back to the model
+
+
+;;;; The `vertico' package applies a vertical layout to the minibuffer.
+;;;; It also pops up the minibuffer eagerly so we can see the available
+;;;; options without further interactions.  This package is very fast
+;;;; and "just works", though it also is highly customisable in case we
+;;;; need to modify its behaviour.
+;;;;
+;;;; Further reading: https://protesilaos.com/emacs/dotemacs#h:cff33514-d3ac-4c16-a889-ea39d7346dc5
+;;(use-package vertico
+;;  :ensure t
+;;  :config
+;;  (setq vertico-cycle t)
+;;  (setq vertico-resize nil)
+;;  (vertico-mode 1))
+
+
+; The `marginalia' package provides helpful annotations next to
+; completion candidates in the minibuffer.  The information on
+; display depends on the type of content.  If it is about files, it
+; shows file permissions and the last modified date.  If it is a
+; buffer, it shows the buffer's size, major mode, and the like.
+;
+; Further reading: https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8e7e
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode 1))
+
+
+; org roam
+(define-prefix-command 'org-roam-prefix-map)
+(global-set-key (kbd "C-c n") 'org-roam-prefix-map)
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/RoamNotes"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+; TRAMPS
+(setq remote-lpc-coffea4bees-path "/ssh:jda102@cmslpc-el9.fnal.gov:/uscms/home/jda102/nobackup/HH4b/Run3/coffea4bees/")
+
+; Ord Mode
+(load "~/lab/emacs/johns-org.el")
+
+;; Example of using the variable
+(defun open-lpc-coffea4bees ()
+  "Open the remote HH4b directory."
+  (interactive)
+  (find-file remote-lpc-coffea4bees-path))
+
+
+;(defun set-help-buffer-font ()
+;  "Set help-mode buffers to use Menlo font."
+;  (face-remap-add-relative 'default '(:family "Menlo" :height 150)))
+;
+;(add-hook 'help-mode-hook 'set-help-buffer-font)

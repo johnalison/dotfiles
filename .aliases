@@ -14,9 +14,6 @@ alias cp='cp -i'
 alias diff='colordiff'
 
 #alias emacs='/usr/local/bin/emacs'
-alias emcas='emacs'
-alias eamcs='emacs'
-alias emasc='emacs'
 
 
 alias cal='cal -3'
@@ -24,11 +21,18 @@ alias cal='cal -3'
 # alias mduOn='sudo mdutil -a -i on'
 # alias mduOff='sudo mdutil -a -i off'
 
-alias nemacs='emacs '
-alias nemcas='emacs '
-alias neamcs='emacs '
-alias nemasc='emacs '
-alias neamsc='emacs '
+
+
+alias nemacs='/opt/homebrew/bin/emacs -nw'
+alias nemcas='/opt/homebrew/bin/emacs -nw'
+alias neamcs='/opt/homebrew/bin/emacs -nw'
+alias nemasc='/opt/homebrew/bin/emacs -nw'
+alias neamsc='/opt/homebrew/bin/emacs -nw'
+alias emacs="open -a /Applications/Emacs.app"
+alias emcas='emacs'
+alias eamcs='emacs'
+alias emasc='emacs'
+
 
 alias py='python3'
 alias df='df -h'
