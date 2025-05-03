@@ -11,6 +11,33 @@
 (menu-bar-mode -1)            ; Disable the menu bar
 
 
+(setq make-backup-files nil) ;turn off the backup files
+
+
+					;
+(global-set-key "\C-h" 'delete-backward-char)
+(global-set-key (kbd "C-?") 'help-command)
+(global-set-key "\M-h" 'backward-kill-word)
+(global-set-key "\M-w" 'ispell-word)
+(global-set-key "\M-#" 'ispell-region)
+;(global-set-key "\C-v" 'ispell-word)
+;(global-set-key "\C-q" 'query-replace-regexp)
+(global-set-key "\C-l" 'goto-line)
+(global-set-key "\M-n" 'forward-paragraph)
+(global-set-key "\M-p" 'backward-paragraph)
+;(global-set-key "\M-v" 'scroll-up-command)
+(global-set-key (kbd "C-c r") 'revert-buffer-quick)
+(global-set-key "\M-?" 'help-command)
+
+
+;(global-set-key [S-iso-lefttab] 'dabbrev-expand)
+;(global-set-key "\M-z" 'dabbrev-expand)
+(global-set-key (kbd "<backtab>") 'dabbrev-expand)
+;(global-set-key "\e[Z" 'dabbrev-expand)
+;(add-hook 'python-mode-hook
+;          (lambda () (define-key python-mode-map [backtab] 'dabbrev-expand)))
+
+
 ;; Set up the visible bell
 ;;(setq visible-bell nil)
 (setq ring-bell-function 'ignore)
@@ -53,6 +80,26 @@
 ;(setq use-package-always-ensure t)
 
 
+
+;;(use-package ivy
+;;  :diminish
+;;  :bind (("C-s" . swiper)
+;;         :map ivy-minibuffer-map
+;;         ("TAB" . ivy-alt-done)
+;;         ("C-l" . ivy-alt-done)
+;;         ("C-j" . ivy-next-line)
+;;         ("C-k" . ivy-previous-line)
+;;         :map ivy-switch-buffer-map
+;;         ("C-k" . ivy-previous-line)
+;;         ("C-l" . ivy-done)
+;;         ("C-d" . ivy-switch-buffer-kill)
+;;         :map ivy-reverse-i-search-map
+;;         ("C-k" . ivy-previous-line)
+;;         ("C-d" . ivy-reverse-i-search-kill))
+;;  :config
+;;  (ivy-mode 1))
+
+
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
@@ -61,33 +108,46 @@
 
 
 
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+;(use-package ivy-rich
+;  :init
+;  (ivy-rich-mode 1))
 
 
-;(use-package counsel
-;  :bind (("M-x" . counsel-M-x)
-;         ("C-x b" . counsel-ibuffer)
-;         ("C-x C-f" . counsel-find-file)
-;         :map minibuffer-local-map
-;         ("C-r" . 'counsel-minibuffer-history)))
+(use-package counsel
+  :bind (("M-X" . counsel-M-x)
+         ("C-x B" . counsel-ibuffer)
+         ;("C-x F" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history)))
 
 
+;;; force counsel-ibuffer to require a match
+;(with-eval-after-load 'counsel
+;  (defun my/counsel-ibuffer-require-match (orig-fun &rest args)
+;    "Run ORIG‑FUN (counsel‑ibuffer) with `ivy‑require‑match' bound to t."
+;    (let ((ivy-require-match t))
+;      (apply orig-fun args)))
+;  (advice-add 'counsel-ibuffer :around #'my/counsel-ibuffer-require-match))
+
+
+
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+
+
+
+(unless (eq window-system nil)
+  (use-package doom-themes
+    :init (load-theme 'modus-operandi t)))
 
 
 (custom-set-variables
@@ -101,9 +161,9 @@
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
  '(package-selected-packages
-   '(company counsel elgrep f gptel-quick ivy marginalia org-bullets
-	     org-modern org-roam  vertico
-	     visual-fill-column yaml))
+   '(company counsel doom-themes elgrep f gptel-quick helpful ivy
+	     ivy-rich marginalia org-bullets org-modern org-roam
+	     vertico visual-fill-column yaml))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -114,60 +174,40 @@
  )
 
 
-;(global-set-key [S-iso-lefttab] 'dabbrev-expand)
-;(global-set-key "\M-z" 'dabbrev-expand)
-(global-set-key (kbd "<backtab>") 'dabbrev-expand)
-;(global-set-key "\e[Z" 'dabbrev-expand)
 
-(add-hook 'python-mode-hook
-          (lambda () (define-key python-mode-map [backtab] 'dabbrev-expand)))
 
-(global-set-key "\C-h" 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help-command)
-(global-set-key "\M-h" 'backward-kill-word)
-(global-set-key "\M-w" 'ispell-word)
-(global-set-key "\M-#" 'ispell-region)
-;(global-set-key "\C-v" 'ispell-word)
-;(global-set-key "\C-q" 'query-replace-regexp)
-(global-set-key "\C-l" 'goto-line)
-(global-set-key "\M-n" 'forward-paragraph)
-(global-set-key "\M-p" 'backward-paragraph)
-;(global-set-key "\M-v" 'scroll-up-command)
-(global-set-key (kbd "C-c r") 'revert-buffer-quick)
-
-(global-set-key "\M-?" 'help-command)
 
 ;(global-set-key "\C-p" 'ispell-buffer)
 ;(define-key global-map [(control return)] 'ispell-word)
 
 ; Map C-c C-v to the following function
-(define-key global-map [(control c) (control v)] 'atl-switch-src)
+;(define-key global-map [(control c) (control v)] 'atl-switch-src)
 
-; Switches between .h and .cxx files
-(defun atl-switch-src ()
-  (interactive)
-  (setq filename buffer-file-name)
-  (setq path (split-string filename "/"))
-  (if (not (string-equal (car path) ""))
-      (setq path (cons "" path)))
-  (setq len (length path))
-  (setq pkg (nth (- len 3) path))
-
-  (if (string-match "\\.h" filename)
-      (progn
-        (setcar (nthcdr (- len 2) path) "src")
-        (setq tmppath (mapconcat 'identity path "/"))
-        (string-match "\\.h" tmppath)
-        (setq hpath (replace-match ".cxx" nil nil tmppath))))
-
-  (if (string-match "\\.cxx" filename)
-      (progn
-        (setcar (nthcdr (- len 2) path) pkg)
-        (setq tmppath (mapconcat 'identity path "/"))
-        (string-match "\\.cxx" tmppath)
-        (setq hpath (replace-match ".h" nil nil tmppath))))
-
-  (find-file hpath))
+;;; Switches between .h and .cxx files
+;;(defun atl-switch-src ()
+;;  (interactive)
+;;  (setq filename buffer-file-name)
+;;  (setq path (split-string filename "/"))
+;;  (if (not (string-equal (car path) ""))
+;;      (setq path (cons "" path)))
+;;  (setq len (length path))
+;;  (setq pkg (nth (- len 3) path))
+;;
+;;  (if (string-match "\\.h" filename)
+;;      (progn
+;;        (setcar (nthcdr (- len 2) path) "src")
+;;        (setq tmppath (mapconcat 'identity path "/"))
+;;        (string-match "\\.h" tmppath)
+;;        (setq hpath (replace-match ".cxx" nil nil tmppath))))
+;;
+;;  (if (string-match "\\.cxx" filename)
+;;      (progn
+;;        (setcar (nthcdr (- len 2) path) pkg)
+;;        (setq tmppath (mapconcat 'identity path "/"))
+;;        (string-match "\\.cxx" tmppath)
+;;        (setq hpath (replace-match ".h" nil nil tmppath))))
+;;
+;;  (find-file hpath))
 
 ;(set-default-font "-adobe-courier-bold-r-normal--14-100-100-100-m-90-iso10646-1")
 ;(set-default-font "-misc-fixed-medium-r-normal--13-100-100-100-c-70-iso8859-1")
@@ -177,8 +217,6 @@
 ;(setq inhibit-splash-screen t)
 
 
-;turn off the backup files
-(setq make-backup-files nil)
 
 (add-hook 'encoded-kbd-mode
  (lambda ()
@@ -193,15 +231,13 @@
   )
 )
 
-(setq vhdl-end-comment-column 175)
-
 
 ;(setq auto-mode-alist (remove (rassoc 'vhdl-mode auto-mode-alist) auto-mode-alist))
 ;(add-to-list 'auto-mode-alist '("\\.vhdl\\'" . c++-mode))
 
 ;Py Flakes
-(when (require 'elpy nil t)
-  (elpy-enable))
+;(when (require 'elpy nil t)
+;  (elpy-enable))
 
 
 (defalias 'scroll-ahead `scroll-up)
@@ -314,79 +350,79 @@
 
 
 					;
-					;
-					; Testing
-;(set-fill-column 200)
-;;;
-(define-minor-mode ospl-mode  "One Sentence Per Line"
-  :init-value nil
-  :lighter " ospl"
-  :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "M-q") 'ospl/fill-paragraph)
-            map)
-
-  (if ospl-mode
-      (progn
-        (visual-line-mode 1)
-        ;(setq right-margin-width (- (window-body-width) fill-column)))
-        (setq right-margin-width 0 ))
-    (visual-line-mode -1)
-    (setq right-margin-width 0))
-
-  ;; Account for new margin width
-  (set-window-buffer (selected-window) (current-buffer)))
-
-
-(defun ospl/unfill-paragraph ()
-  "Unfill the paragraph at point.
-
-This repeatedly calls `join-line' until the whole paragraph does
-not contain hard line breaks any more."
-  (interactive)
-  (forward-paragraph 1)
-  (forward-paragraph -1)
-  (while (looking-at paragraph-start)
-    (forward-line 1))
-  (let ((beg (point)))
-    (forward-paragraph 1)
-    (backward-char 1)
-    (while (> (point) beg)
-      (join-line)
-      (beginning-of-line))))
-
-
-(defun ospl/fill-paragraph ()
-  "Fill the current paragraph until there is one sentence per line.
-
-This unfills the paragraph, and places hard line breaks after each sentence."
-  (interactive)
-  (save-excursion
-    (fill-paragraph)         ; takes care of putting 2 spaces if needed
-    (ospl/unfill-paragraph)  ; remove hard line breaks
-
-    ;; insert line breaks again
-    (let ((end-of-paragraph (make-marker)))
-      (save-excursion
-        (forward-paragraph)
-        (backward-sentence)
-        (forward-sentence)
-        (set-marker end-of-paragraph (point)))
-      (forward-sentence)
-      (while (< (point) end-of-paragraph)
-        (just-one-space)
-        (delete-backward-char 1)
-        (newline)
-        (forward-sentence))
-      (set-marker end-of-paragraph nil))))
-
-
-
-
-(fset 'combine-lines
-   (kmacro-lambda-form [?\C-e ?\C-a ?\C-h ?  ?\C-a] 0 "%d"))
-
-(global-set-key "\C-x\C-kL" 'combine-lines)
-
+;;					;
+;;					; Testing
+;;;(set-fill-column 200)
+;;;;;
+;;(define-minor-mode ospl-mode  "One Sentence Per Line"
+;;  :init-value nil
+;;  :lighter " ospl"
+;;  :keymap (let ((map (make-sparse-keymap)))
+;;            (define-key map (kbd "M-q") 'ospl/fill-paragraph)
+;;            map)
+;;
+;;  (if ospl-mode
+;;      (progn
+;;        (visual-line-mode 1)
+;;        ;(setq right-margin-width (- (window-body-width) fill-column)))
+;;        (setq right-margin-width 0 ))
+;;    (visual-line-mode -1)
+;;    (setq right-margin-width 0))
+;;
+;;  ;; Account for new margin width
+;;  (set-window-buffer (selected-window) (current-buffer)))
+;;
+;;
+;;(defun ospl/unfill-paragraph ()
+;;  "Unfill the paragraph at point.
+;;
+;;This repeatedly calls `join-line' until the whole paragraph does
+;;not contain hard line breaks any more."
+;;  (interactive)
+;;  (forward-paragraph 1)
+;;  (forward-paragraph -1)
+;;  (while (looking-at paragraph-start)
+;;    (forward-line 1))
+;;  (let ((beg (point)))
+;;    (forward-paragraph 1)
+;;    (backward-char 1)
+;;    (while (> (point) beg)
+;;      (join-line)
+;;      (beginning-of-line))))
+;;
+;;
+;;(defun ospl/fill-paragraph ()
+;;  "Fill the current paragraph until there is one sentence per line.
+;;
+;;This unfills the paragraph, and places hard line breaks after each sentence."
+;;  (interactive)
+;;  (save-excursion
+;;    (fill-paragraph)         ; takes care of putting 2 spaces if needed
+;;    (ospl/unfill-paragraph)  ; remove hard line breaks
+;;
+;;    ;; insert line breaks again
+;;    (let ((end-of-paragraph (make-marker)))
+;;      (save-excursion
+;;        (forward-paragraph)
+;;        (backward-sentence)
+;;        (forward-sentence)
+;;        (set-marker end-of-paragraph (point)))
+;;      (forward-sentence)
+;;      (while (< (point) end-of-paragraph)
+;;        (just-one-space)
+;;        (delete-backward-char 1)
+;;        (newline)
+;;        (forward-sentence))
+;;      (set-marker end-of-paragraph nil))))
+;;
+;;
+;;
+;;
+;;(fset 'combine-lines
+;;   (kmacro-lambda-form [?\C-e ?\C-a ?\C-h ?  ?\C-a] 0 "%d"))
+;;
+;;(global-set-key "\C-x\C-kL" 'combine-lines)
+;;
 ;; Twikis
 ;(load "~/emacs/emacs-twiki-mode/twiki.el")
 ;(add-to-list 'auto-mode-alist'("\\.twiki$" . twiki-mode))
@@ -405,7 +441,7 @@ This unfills the paragraph, and places hard line breaks after each sentence."
 (defun copy-to-clipboard ()
   (interactive)
   (copy-to-clipboard-2)
-  (message "Exported Twiki text to clipboard")
+  (message "Exported text to clipboard")
   )
 
 (defun copy-region-to-pbcopy ()
@@ -595,34 +631,16 @@ This unfills the paragraph, and places hard line breaks after each sentence."
   :config
   (marginalia-mode 1))
 
-
 ; org roam
-(define-prefix-command 'org-roam-prefix-map)
-(global-set-key (kbd "C-c n") 'org-roam-prefix-map)
-
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/RoamNotes"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
-  :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
 
 ; TRAMPS
 (setq remote-lpc-coffea4bees-path "/ssh:jda102@cmslpc-el9.fnal.gov:/uscms/home/jda102/nobackup/HH4b/Run3/coffea4bees/")
 
-; Ord Mode
+; Org Mode
 (load "~/lab/emacs/johns-org.el")
+
+
+
 
 ;; Example of using the variable
 (defun open-lpc-coffea4bees ()
@@ -631,8 +649,22 @@ This unfills the paragraph, and places hard line breaks after each sentence."
   (find-file remote-lpc-coffea4bees-path))
 
 
+
+
+
 ;(defun set-help-buffer-font ()
 ;  "Set help-mode buffers to use Menlo font."
 ;  (face-remap-add-relative 'default '(:family "Menlo" :height 150)))
 ;
 ;(add-hook 'help-mode-hook 'set-help-buffer-font)
+
+
+(setq select-enable-clipboard nil)
+
+; Make cut and paste work with the macOS clipboard
+(defun yank-from-osx-clipboard ()
+  "Insert the contents of the macOS clipboard at point."
+  (interactive)
+  (insert (shell-command-to-string "pbpaste")))
+
+(global-set-key (kbd "s-v") 'yank-from-osx-clipboard)
