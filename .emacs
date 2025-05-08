@@ -161,9 +161,10 @@
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
  '(package-selected-packages
-   '(company counsel doom-themes elgrep f gptel-quick helpful ivy
-	     ivy-rich marginalia org-bullets org-modern org-roam
-	     vertico visual-fill-column yaml))
+   '(company consult consult-org-roam counsel doom-themes elgrep
+	     gptel-quick helpful ivy-rich marginalia orderless
+	     org-bullets org-gcal org-modern org-roam vertico
+	     visual-fill-column yaml))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -615,8 +616,27 @@
 ;;  :ensure t
 ;;  :config
 ;;  (setq vertico-cycle t)
-;;  (setq vertico-resize nil)
+;;  ;(setq vertico-resize nil)
 ;;  (vertico-mode 1))
+
+(use-package vertico
+  :ensure t
+  :custom
+  (vertico-cycle t)
+  :init
+  (vertico-mode))
+
+(use-package savehist
+  :init
+  (savehist-mode))
+
+(use-package marginalia
+  :after vertico
+  :ensure t
+  :custom
+  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :init
+  (marginalia-mode))
 
 
 ; The `marginalia' package provides helpful annotations next to
@@ -626,10 +646,10 @@
 ; buffer, it shows the buffer's size, major mode, and the like.
 ;
 ; Further reading: https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8e7e
-(use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode 1))
+;;(use-package marginalia
+;;  :ensure t
+;;  :config
+;;  (marginalia-mode 1))
 
 ; org roam
 
@@ -638,6 +658,9 @@
 
 ; Org Mode
 (load "~/lab/emacs/johns-org.el")
+
+;; GCal
+(load "~/lab/emacs/gcal-setup.el")
 
 
 
@@ -668,3 +691,44 @@
   (insert (shell-command-to-string "pbpaste")))
 
 (global-set-key (kbd "s-v") 'yank-from-osx-clipboard)
+
+
+;; The `orderless' package lets the minibuffer use an out-of-order
+;; pattern matching algorithm.  It matches space-separated words or
+;; regular expressions in any order.  In its simplest form, something
+;; like "ins pac" matches `package-menu-mark-install' as well as
+;; `package-install'.  This is a powerful tool because we no longer
+;; need to remember exactly how something is named.
+;;
+;; Note that Emacs has lots of "completion styles" (pattern matching
+;; algorithms), but let us keep things simple.
+;;
+;; Further reading: https://protesilaos.com/emacs/dotemacs#h:7cc77fd0-8f98-4fc0-80be-48a758fcb6e2
+(use-package orderless
+  :ensure t
+  :config
+  (setq completion-styles '(orderless basic)))
+
+
+;; The `consult' package provides lots of commands that are enhanced
+;; variants of basic, built-in functionality.  One of the headline
+;; features of `consult' is its preview facility, where it shows in
+;; another Emacs window the context of what is currently matched in
+;; the minibuffer.  Here I define key bindings for some commands you
+;; may find useful.  The mnemonic for their prefix is "alternative
+;; search" (as opposed to the basic C-s or C-r keys).
+;;
+;; Further reading: https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9ff1d
+(use-package consult
+  :ensure t
+  :bind (;; A recursive grep
+         ("M-s g" . consult-grep)
+         ;; Search for files names recursively
+         ("M-s f" . consult-find)
+         ;; Search through the outline (headings) of the file
+         ("M-s M-o" . consult-outline)
+         ;; Search the current buffer
+         ("M-s M-l" . consult-line)
+         ;; Switch to another buffer, or bookmarked file, or recently
+         ;; opened file.
+         ("M-s b" . consult-buffer)))
