@@ -161,10 +161,10 @@
  '(default-input-method "rfc1345")
  '(global-font-lock-mode t nil (font-lock))
  '(package-selected-packages
-   '(company consult consult-org-roam counsel doom-themes elgrep
-	     gptel-quick helpful ivy-rich magit marginalia orderless
-	     org-bullets org-gcal org-modern org-roam vertico
-	     visual-fill-column yaml))
+   '(company consult consult-org-roam counsel dired-hide-dotfiles
+	     dired-open doom-themes elgrep gptel-quick helpful
+	     ivy-rich magit marginalia orderless org-bullets org-gcal
+	     org-modern org-roam vertico visual-fill-column yaml))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -738,3 +738,43 @@
 ;; The `magit' package is a powerful interface to Git.
 (use-package magit
   :ensure t)
+
+
+
+
+
+;; Dired
+;; The `dired' package is the built-in file manager of Emacs.
+(use-package dired
+  :ensure nil              ;; dired is built-in
+  :bind (:map dired-mode-map
+              ("b" . dired-up-directory))
+  :custom ((insert-directory-program "gls")
+	   (dired-listing-switches "-agho --group-directories-first")
+	   ;;(dired-dwim-target t)
+	   ;;(dired-recursive-copies 'always)
+	   ;;(dired-recursive-deletes 'top)
+	   )
+  )
+
+
+(with-eval-after-load 'dired
+  (require 'dired-x))
+
+(use-package dired-open
+  :config
+  ;; Doesn't work as expected!
+  (add-to-list 'dired-open-functions #'dired-open-xdg t)
+  ;; -- OR! --
+  (setq dired-open-extensions '(("key" . "open")
+				("pdf" . "open"))))
+
+
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind(:map dired-mode-map
+	("H" . dired-hide-dotfiles-mode)
+  ))
+  ;;:config
+  ;;(evil-collection-define-key 'normal 'dired-mode-map
+  ;;  "H" 'dired-hide-dotfiles-mode))
