@@ -162,7 +162,7 @@
  '(global-font-lock-mode t nil (font-lock))
  '(package-selected-packages
    '(company consult consult-org-roam counsel doom-themes elgrep
-	     gptel-quick helpful ivy-rich marginalia orderless
+	     gptel-quick helpful ivy-rich magit marginalia orderless
 	     org-bullets org-gcal org-modern org-roam vertico
 	     visual-fill-column yaml))
  '(ps-font-size 14)
@@ -732,3 +732,9 @@
          ;; Switch to another buffer, or bookmarked file, or recently
          ;; opened file.
          ("M-s b" . consult-buffer)))
+
+;;
+;; Magit
+;; The `magit' package is a powerful interface to Git.
+(use-package magit
+  :ensure t)
