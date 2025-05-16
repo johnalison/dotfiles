@@ -791,14 +791,18 @@
 	     ("M-<right>" . right-word)
 	     ("M-<left>" .  left-word)
 	     )
+  :bind(:map mu4e-compose-mode-map
+  	     ("M-n" .  forward-paragraph)
+	     ("M-p" .  backward-paragraph)
+	     )
 
   :config
 
   ;; This is set to 't' to avoid mail syncing issues when using mbsync
   (setq mu4e-change-filenames-when-moving t)
 
-  ;; Refresh mail using isync every 10 minutes
-  (setq mu4e-update-interval (* 10 60))
+  ;; Refresh mail using isync every 30 minutes
+  (setq mu4e-update-interval (* 30 60))
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-maildir "~/Mail")
   (setq mu4b-mu-binary "/opt/homebrew/bin/mu")
@@ -812,10 +816,13 @@
 
   (setq mu4e-bookmarks
 	'(("flag:unread AND NOT flag:trashed" "Unread messages"      ?i)
-	  ("date:today..now"                  "Today's messages"     ?t)
-	  ("flag:flagged"                     "Flagged"             ?f)
-	  ("date:7d..now"                     "Last 7 days"          ?w)
-	  ("mime:image/*"                     "Messages with images" ?p)))
+	  ("flag:flagged AND NOT flag:trashed"                     "Flagged"             ?f)
+	  ("maildir:\"/Inbox\" and date:today..now AND NOT flag:trashed"                  "Today's messages"     ?t)
+	  ("maildir:\"/Inbox\" and date:7d..now AND NOT flag:trashed"                  "This Weeks's messages"     ?w)
+	  ("maildir:\"/Inbox\" and date:30d..now AND NOT flag:trashed"                  "This Months's messages"     ?m)
+	  ;("date:7d..now AND NOT flag:trashed"                     "Last 7 days"          ?w)
+	  ;("mime:image/*"                     "Messages with images" ?p))
+	))
 
 
   (setq mu4e-maildir-shortcuts
@@ -837,3 +844,4 @@
 
   (mu4e t)
   )
+(put 'list-timers 'disabled nil)
