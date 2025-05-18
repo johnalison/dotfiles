@@ -163,8 +163,9 @@
  '(package-selected-packages
    '(company consult consult-org-roam counsel dired-hide-dotfiles
 	     dired-open doom-themes elgrep gptel-quick helpful
-	     ivy-rich magit marginalia orderless org-bullets org-gcal
-	     org-modern org-roam vertico visual-fill-column yaml))
+	     ivy-rich magit marginalia orderless org-bullets
+	     org-contacts org-gcal org-modern org-roam
+	     rainbow-delimiters vertico visual-fill-column yaml))
  '(ps-font-size 14)
  '(show-paren-mode t nil (paren)))
 (custom-set-faces
@@ -767,6 +768,7 @@
   (add-to-list 'dired-open-functions #'dired-open-xdg t)
   ;; -- OR! --
   (setq dired-open-extensions '(("key" . "open")
+				("docx" . "open")
 				("pdf" . "open"))))
 
 
@@ -783,6 +785,19 @@
 (add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e") ;; adjust path if needed
 
 
+(defun efs/capture-mail-follow-up (msg)
+  "Capture a follow-up task from an email."
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "mf"))
+
+(defun efs/capture-mail-read-later (msg)
+  "Capture a readlater task from an email."
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "mr"))
+
+
 (use-package mu4e
   :ensure nil
   ;:load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
@@ -797,7 +812,7 @@
 	     )
 
   :config
-
+  (require 'mu4e-org)
   ;; This is set to 't' to avoid mail syncing issues when using mbsync
   (setq mu4e-change-filenames-when-moving t)
 
@@ -813,6 +828,22 @@
   (setq mu4e-trash-folder  "/[Gmail]/Trash")
   (setq mu4e-compose-format-flowed t)
   (setq mu4e-compose-signature nil)
+
+  (setq mu4e-headers-show-threads nil)      ;; Main option to disable threading
+  (setq mu4e-headers-include-related nil)   ;; Don't include related messages
+  (setq mu4e-headers-skip-duplicates nil)   ;; Show all messages, even duplicates
+
+
+  ;; Add custom actions for our capture templates
+  (add-to-list 'mu4e-headers-actions
+	       '("follow up" . efs/capture-mail-follow-up) t)
+  (add-to-list 'mu4e-view-actions
+	       '("follow up" . efs/capture-mail-follow-up) t)
+  (add-to-list 'mu4e-headers-actions
+	       '("read later" . efs/capture-mail-read-later) t)
+  (add-to-list 'mu4e-view-actions
+	       '("read later" . efs/capture-mail-read-later) t)
+
 
   (setq mu4e-bookmarks
 	'(("flag:unread AND NOT flag:trashed" "Unread messages"      ?i)
@@ -844,4 +875,6 @@
 
   (mu4e t)
   )
-(put 'list-timers 'disabled nil)
+
+
+;;(put 'list-timers 'disabled nil)
