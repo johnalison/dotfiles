@@ -25,6 +25,7 @@
 
 #+end_src
 
+
 * Basic UI Configuration
 
 Simplify the UI
@@ -45,6 +46,19 @@ Simplify the UI
   (setq ring-bell-function 'ignore)
 
 
+#+end_src
+
+Fonts
+
+#+begin_src emacs-lisp
+
+  ;; Set the fixed pitch face
+  (set-face-attribute 'default nil :height 150) ;; 15pt font
+
+  ;; Set the variable pitch face
+  ;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+    
 #+end_src
 
 No Backup files
@@ -92,7 +106,8 @@ Copy the current region to the clipboard.  Bound to =C-c e=
 
 * UI Configuration
 
-** scolling
+
+** Scolling
 
 #+begin_src emacs-lisp
 
@@ -147,6 +162,7 @@ Save hist
 
 #+end_src
 
+
 * Key bindings
 
 #+begin_src emacs-lisp
@@ -181,6 +197,7 @@ Save hist
     (setq which-key-idle-delay 1))
 
 #+end_src
+
 
 * Counsel
 
@@ -339,10 +356,9 @@ The [[https://protesilaos.com/emacs/dotemacs#h:cff33514-d3ac-4c16-a889-ea39d7346
 #+end_src
 
 
-
 * Marginalia
 
-The  [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8e7e][Marginalia]] package provides helpful annotations next to  completion candidates in the minibuffer.  The information on display depends on the type of content.  If it is about files, it shows file permissions and the last modified date.  If it is a buffer, it shows the buffer's size, major mode, and the like.
+The [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8e7e][Marginalia]] package provides helpful annotations next to  completion candidates in the minibuffer.  The information on display depends on the type of content.  If it is about files, it shows file permissions and the last modified date.  If it is a buffer, it shows the buffer's size, major mode, and the like.
  
 #+begin_src emacs-lisp
 
@@ -356,8 +372,103 @@ The  [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d
 
 #+end_src
 
-* Rainbow Delimiters
 
+* Orderless
+
+The [[https://protesilaos.com/emacs/dotemacs#h:7cc77fd0-8f98-4fc0-80be-48a758fcb6e2][orderless]] package lets the minibuffer use an out-of-order pattern matching algorithm.  It matches space-separated words or regular expressions in any order.  In its simplest form, something like "ins pac" matches `package-menu-mark-install' as well as `package-install'.  This is a powerful tool because we no longer need to remember exactly how something is named.
+
+Note that Emacs has lots of "completion styles" (pattern matching algorithms), but let us keep things simple.
+
+#+begin_src emacs-lisp
+
+  (use-package orderless
+    :ensure t
+    :config
+    (setq completion-styles '(orderless basic)))
+    
+#+end_src
+
+
+* Consult
+
+
+The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9ff1d][consult]] package provides lots of commands that are enhanced variants of basic, built-in functionality.  One of the headline features of consult is its preview facility, where it shows in another Emacs window the context of what is currently matched in the minibuffer.  Here I define key bindings for some commands you may find useful.  The mnemonic for their prefix is "alternative search" (as opposed to the basic C-s or C-r keys).
+
+#+begin_src emacs-lisp
+
+  (use-package consult
+    :ensure t
+    :bind (;; A recursive grep
+           ("M-s g" . consult-grep)
+           ;; Search for files names recursively
+           ("M-s f" . consult-find)
+           ;; Search through the outline (headings) of the file
+           ("M-s M-o" . consult-outline)
+           ;; Search the current buffer
+           ("M-s M-l" . consult-line)
+           ;; Switch to another buffer, or bookmarked file, or recently
+           ;; opened file.
+           ("M-s b" . consult-buffer)))
+    
+#+end_src
+
+
+* Magit
+
+ The `magit' package is a powerful interface to Git.
+
+#+begin_src emacs-lisp
+
+  (use-package magit
+    :ensure t)
+
+#+end_src
+
+
+* Dired
+
+The `dired' package is the built-in file manager of Emacs.
+
+#+begin_src emacs-lisp
+
+  
+  (use-package dired
+    :ensure nil              ;; dired is built-in
+    :bind (:map dired-mode-map
+                ("b" . dired-up-directory))
+    :custom ((insert-directory-program "gls")
+  	   (dired-listing-switches "-agho --group-directories-first")
+  	   ;;(dired-dwim-target t)
+  	   ;;(dired-recursive-copies 'always)
+  	   ;;(dired-recursive-deletes 'top)
+  	   )
+    )
+
+
+  (with-eval-after-load 'dired
+    (require 'dired-x))
+
+  (use-package dired-open
+    :config
+    ;; Doesn't work as expected!
+    (add-to-list 'dired-open-functions #'dired-open-xdg t)
+    ;; -- OR! --
+    (setq dired-open-extensions '(("key" . "open")
+  				("docx". "open")
+  				("pdf" . "open"))))
+
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :bind(:map dired-mode-map
+  	("H" . dired-hide-dotfiles-mode)
+    ))
+    
+#+end_src
+
+
+* Rainbow Delimiters
+ 
 [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets according to their nesting depth. This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
 
 #+begin_src emacs-lisp
@@ -394,208 +505,730 @@ The  [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d
 #+end_src
 
 
-; org roam
-
-; Org Mode
-(load "~/lab/emacs/johns-org.el")
-
-;; GCal
-(load "~/lab/emacs/gcal-setup.el")
-
-
-
-
-;; The `orderless' package lets the minibuffer use an out-of-order
-;; pattern matching algorithm.  It matches space-separated words or
-;; regular expressions in any order.  In its simplest form, something
-;; like "ins pac" matches `package-menu-mark-install' as well as
-;; `package-install'.  This is a powerful tool because we no longer
-;; need to remember exactly how something is named.
-;;
-;; Note that Emacs has lots of "completion styles" (pattern matching
-;; algorithms), but let us keep things simple.
-;;
-;; Further reading: https://protesilaos.com/emacs/dotemacs#h:7cc77fd0-8f98-4fc0-80be-48a758fcb6e2
-(use-package orderless
-  :ensure t
-  :config
-  (setq completion-styles '(orderless basic)))
-
-
-;; The `consult' package provides lots of commands that are enhanced
-;; variants of basic, built-in functionality.  One of the headline
-;; features of `consult' is its preview facility, where it shows in
-;; another Emacs window the context of what is currently matched in
-;; the minibuffer.  Here I define key bindings for some commands you
-;; may find useful.  The mnemonic for their prefix is "alternative
-;; search" (as opposed to the basic C-s or C-r keys).
-;;
-;; Further reading: https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9ff1d
-(use-package consult
-  :ensure t
-  :bind (;; A recursive grep
-         ("M-s g" . consult-grep)
-         ;; Search for files names recursively
-         ("M-s f" . consult-find)
-         ;; Search through the outline (headings) of the file
-         ("M-s M-o" . consult-outline)
-         ;; Search the current buffer
-         ("M-s M-l" . consult-line)
-         ;; Switch to another buffer, or bookmarked file, or recently
-         ;; opened file.
-         ("M-s b" . consult-buffer)))
-
-;;
-;; Magit
-;; The `magit' package is a powerful interface to Git.
-(use-package magit
-  :ensure t)
-
-
-
-
-
-;; Dired
-;; The `dired' package is the built-in file manager of Emacs.
-(use-package dired
-  :ensure nil              ;; dired is built-in
-  :bind (:map dired-mode-map
-              ("b" . dired-up-directory))
-  :custom ((insert-directory-program "gls")
-	   (dired-listing-switches "-agho --group-directories-first")
-	   ;;(dired-dwim-target t)
-	   ;;(dired-recursive-copies 'always)
-	   ;;(dired-recursive-deletes 'top)
-	   )
-  )
-
-
-(with-eval-after-load 'dired
-  (require 'dired-x))
-
-(use-package dired-open
-  :config
-  ;; Doesn't work as expected!
-  (add-to-list 'dired-open-functions #'dired-open-xdg t)
-  ;; -- OR! --
-  (setq dired-open-extensions '(("key" . "open")
-				("docx" . "open")
-				("pdf" . "open"))))
-
-
-(use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind(:map dired-mode-map
-	("H" . dired-hide-dotfiles-mode)
-  ))
-  ;;:config
-  ;;(evil-collection-define-key 'normal 'dired-mode-map
-  ;;  "H" 'dired-hide-dotfiles-mode))
-
-
-(add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e") ;; adjust path if needed
-
-
-(defun efs/capture-mail-follow-up (msg)
-  "Capture a follow-up task from an email."
-  (interactive)
-  (call-interactively 'org-store-link)
-  (org-capture nil "mf"))
-
-(defun efs/capture-mail-read-later (msg)
-  "Capture a readlater task from an email."
-  (interactive)
-  (call-interactively 'org-store-link)
-  (org-capture nil "mr"))
-
-
-(use-package mu4e
-  :ensure nil
-  ;:load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
-  :defer 20 ; Wait until 20 seconds after startup
-  :bind(:map mu4e-search-minor-mode-map
-	     ("M-<right>" . right-word)
-	     ("M-<left>" .  left-word)
-	     )
-  :bind(:map mu4e-compose-mode-map
-  	     ("M-n" .  forward-paragraph)
-	     ("M-p" .  backward-paragraph)
-	     )
-
-  :config
-  (require 'mu4e-org)
-  ;; This is set to 't' to avoid mail syncing issues when using mbsync
-  (setq mu4e-change-filenames-when-moving t)
-
-  ;; Refresh mail using isync every 30 minutes
-  (setq mu4e-update-interval (* 30 60))
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq mu4e-maildir "~/Mail")
-  (setq mu4b-mu-binary "/opt/homebrew/bin/mu")
-  (setq user-mail-address  "johnalison@cmu.edu")
-  (setq mu4e-drafts-folder "/[Gmail]/Drafts")
-  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
-  (setq mu4e-refile-folder "/[Gmail]/All Mail")
-  (setq mu4e-trash-folder  "/[Gmail]/Trash")
-  (setq mu4e-compose-format-flowed t)
-  (setq mu4e-compose-signature nil)
-
-  (setq mu4e-headers-show-threads nil)      ;; Main option to disable threading
-  (setq mu4e-headers-include-related nil)   ;; Don't include related messages
-  (setq mu4e-headers-skip-duplicates nil)   ;; Show all messages, even duplicates
-
-
-  ;; Add custom actions for our capture templates
-  (add-to-list 'mu4e-headers-actions
-	       '("follow up" . efs/capture-mail-follow-up) t)
-  (add-to-list 'mu4e-view-actions
-	       '("follow up" . efs/capture-mail-follow-up) t)
-  (add-to-list 'mu4e-headers-actions
-	       '("read later" . efs/capture-mail-read-later) t)
-  (add-to-list 'mu4e-view-actions
-	       '("read later" . efs/capture-mail-read-later) t)
-
-
-  (setq mu4e-bookmarks
-	'(("flag:unread AND NOT flag:trashed" "Unread messages"      ?i)
-	  ("flag:flagged AND NOT flag:trashed"                     "Flagged"             ?f)
-	  ("maildir:\"/Inbox\" and date:today..now AND NOT flag:trashed"                  "Today's messages"     ?t)
-	  ("maildir:\"/Inbox\" and date:7d..now AND NOT flag:trashed"                  "This Weeks's messages"     ?w)
-	  ("maildir:\"/Inbox\" and date:30d..now AND NOT flag:trashed"                  "This Months's messages"     ?m)
-	  ;("date:7d..now AND NOT flag:trashed"                     "Last 7 days"          ?w)
-	  ;("mime:image/*"                     "Messages with images" ?p))
-	))
-
-
-  (setq mu4e-maildir-shortcuts
-      '(("/Inbox"             . ?i)
-        ("/[Gmail]/Sent Mail" . ?s)
-        ("/[Gmail]/Trash"     . ?t)
-        ;;("/[Gmail]/Important" . ?m)
-        ("/[Gmail]/Drafts"    . ?d)
-        ("/[Gmail]/All Mail"  . ?a)))
-
-  (setq
-   message-send-mail-function 'smtpmail-send-it
-   smtpmail-smtp-user "johnda102@gmail.com"
-   smtpmail-smtp-server "smtp.gmail.com"
-   smtpmail-smtp-service 587
-   smtpmail-stream-type 'starttls
-   smtpmail-auth-credentials "~/.authinfo.gpg")
-
-
-  (mu4e t)
-  )
 
   
 * Org Mode
+
+[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs. It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+
+
+** Better Fonts
+
+
+The efs/org-font-setup function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we’re editing a document in org-mode. We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun efs/org-font-setup ()
+    ;; Replace list hyphen with dot
+    ;(font-lock-add-keywords 'org-mode
+    ;			  '(("^ *\\([-]\\) "
+    ;			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+
+    ;; Set faces for heading levels with colors
+    ;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "#8350ef")
+    (set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
+    (set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
+    (set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    (set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    (set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    (set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    (set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    (set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit '(shadow fixed-pitch) :height 1.0)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch) :height 0.9)
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    )
+
+#+end_src
+
+
+** Basic Config
+
+This section contains the basic configuration for org-mode plus the configuration for Org agendas and capture templates.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    ;;(setq-default line-spacing 0.5) ;; 0.2 means 20% extra space
+    (visual-line-mode 1))
+
+
+  (use-package org
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+    (setq org-agenda-files
+  	'("~/RoamNotes/Tasks.org"
+  	  "~/RoamNotes/Mail.org"
+  	  "~/RoamNotes/Archive.org"
+  	  "~/RoamNotes/Birthdays.org"
+  	  "~/RoamNotes/gcal.org"
+  	  ))
+    (setq org-hide-emphasis-markers t)
+    (setq org-hide-block-startup t)
+    (efs/org-font-setup)
+
+    (setq org-insert-heading-respect-content t)
+    (setq org-agenda-start-with-log-mode t)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+
+
+    (setq org-todo-keywords
+  	'((sequence "TODO(t)" "The ONE thing(o)" "Now(n)" "Someday Maybe(s)" "Waiting(w)" "|" "CANCEL(c!)" "DONE(d!)")
+  	  ))
+
+    (setq org-refile-targets
+  	'(("Archive.org" :maxlevel . 1)
+  	  ("Tasks.org" :maxlevel . 1)
+  	  ))
+
+    ;; Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+    ;;
+    (setq org-tag-alist
+  	'((:startgroup)
+  					; Put mutually exclusive tags here
+  	  (:endgroup)
+  	  ;;("@errand" . ?E)
+  	  ;;("@home" . ?H)
+  	  ;;("@work" . ?W)
+  	  ;;("meeting" . ?m)
+  	  ;;("planning" . ?p)
+  	  ("teaching" . ?t)
+  	  ("emacs" . ?e)
+  	  ("HGC" . ?H)
+  	  ("4b" . ?4)
+  	  ("bbWW" . ?W)
+  	  ;;("publish" . ?P)
+  	  ("idea" . ?i)
+  	  ("question" . ?q)
+  	  ))
+
+
+    ;; Configure custom agenda views
+    (setq org-agenda-custom-commands
+  	'(("d" "Dashboard"
+  	   ((agenda "" ((org-deadline-warning-days 7)))
+  	    (todo "The ONE thing"
+  		  ((org-agenda-overriding-header "The ONE Thing")))
+  	    (todo "Now"
+  		  ((org-agenda-overriding-header "To do:")))
+  	    (todo "Waiting"
+  		  ((org-agenda-overriding-header "Waiting on")))
+  	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
+  	    ))
+
+  	  ("t" "To do"
+  	   ((todo "TODO"
+  		  ((org-agenda-overriding-header "Open Items")))))
+
+  	  ("n" "To do now"
+  	   ((todo "Now"
+  		  ((org-agenda-overriding-header "Now:")))))
+
+
+  	  ("o" "The ONE Thing"
+  	   ((todo "The ONE thing"
+  		  ((org-agenda-overriding-header "The ONE Thing")))))
+
+  	  ("s" "Someday Maybe"
+  	   ((todo "Someday Maybe"
+  		  ((org-agenda-overriding-header "Someday Maybe")))))
+
+  	  ;; The + [tag-name] means that the tag is required the - [tag-name] means that the tag is excluded
+  	  ;;("W" "Work Tasks" tags-todo "+work-email")
+
+  	  ))
+
+    (setq org-capture-templates
+  	`(("a" "Appointment" entry (file "~/RoamNotes/gcal.org" )
+  	   "* %?")
+  	  ("t" "Tasks / Projects")
+
+  	  ;; %? is for the cursor /  %U is the time stamp  / %a is the link to the file / %i is the current region
+  	  ;;("tt" "Task" entry (file+olp "~/RoamNotes/Tasks.org" "Inbox")
+  	  ;; "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  	  ("tt" "Task" entry (file "~/RoamNotes/Tasks.org")
+             "* TODO %?\n  %U\n " :empty-lines 1)
+
+  	  ("m", "Email Workflow")
+  	  ("mf", "Follow Up" entry (file+olp "~/RoamNotes/Mail.org" "Follow Up")
+  	   "* TODO %a\n\n %i"
+  	   :immediate-finish t)
+
+  	  ("mr", "Read Later" entry (file+olp "~/RoamNotes/Mail.org" "Read Later")
+  	   "* TODO %a\n\n %i"
+  	   :immediate-finish t))
+  	)
+    )
+
+#+end_src
+
+
+
+* Org mode Keybindings
+
+ This unbinds the Alt-Left and Alt-Right keys in Org-mode, which will make them fall back to the global Emacs keybindings (moving by word).
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+  					;
+  (with-eval-after-load 'org
+    (define-key org-mode-map (kbd "<M-left>") nil)
+    (define-key org-mode-map (kbd "<backtab>") nil)
+    (define-key org-mode-map (kbd "<M-right>") nil))
+
+
+  #+end_src
+
+
+* Nicer Heading Bullets
+
+[[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in org-mode buffers with nicer looking characters that you can control. 
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("○" "-" "" "" "" "" "")))
+
+    ;; Other options: "◉" "○" "●" "○" "●" "○" "●"
+  
+#+end_src
+
+
+* Center Org Buffers
+
+We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document. 
+
+#+begin_src emacs-lisp : tangle ~/dotfiles/init-org.el
+
+  (defun efs/org-mode-visual-fill ()
+    (setq visual-fill-column-width 150
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (org-mode . efs/org-mode-visual-fill))
+
+#+end_src
+
+
+* Latex in Org mode
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (setq org-latex-create-formula-image-program 'dvipng) ;; or 'dvisvgm for SVG output
+  (setq org-export-with-broken-links t)  ;; Allow all broken links
+  (setq org-startup-with-latex-preview t)
+  (setq org-startup-with-inline-images t)
+  (setq org-image-actual-width '(300))
+  
+#+end_src
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  ;; adjust image size, scale, background, etc.
+  (setq org-format-latex-options
+        ;; (see C-h v org-format-latex-options for all settings)
+        '(:foreground default :background default
+          :scale 2.0   ; 1.0 = 100% size
+          :html-foreground "Black" :html-background "Transparent"
+          :html-scale 1.0))
+
+#+end_src
+
+
+* Org Calendar
+
+Set the calendar to open in a side window at the top of the screen
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+  
+  (add-to-list 'display-buffer-alist
+               '("\\*Calendar\\*"
+                 (display-buffer-in-side-window)
+                 (side . top)
+                 (window-height . 20)))
+
+#+end_src
+
+Default show onnly one day
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (setq org-agenda-span 'day)
+  
+#+end_src
+
+
+
+* Org Roam
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (define-prefix-command 'org-roam-prefix-map)
+  (global-set-key (kbd "C-c n") 'org-roam-prefix-map)
+
+
+  (use-package org-roam
+    :ensure t
+    :custom
+    (org-roam-directory "~/RoamNotes")
+    (org-roam-dailies-directory   "Journal/")
+    (org-roam-completion-everywhere t)
+    (org-roam-dailies-capture-templates
+     '(("d" "default" entry
+        (file "~/RoamNotes/Templates/DailyTemplate.org")
+        :target (file+head "%<%Y/%m-%B/%d-%B-%Y-%A>.org" "#+title: %<%d %B %Y %A>\n")))
+     )
+    (org-roam-capture-templates
+     '(("d" "default" plain
+        "\n\n %?\n" :empty-lines-before 1
+        :if-new (file+head "Notes/${slug}-%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n")
+        :unnarrowed t)))
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           :map org-mode-map
+           ("C-M-i"    . completion-at-point))
+    :bind-keymap
+    ("C-c n d" . org-roam-dailies-map)
+    :config
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
+    ;; Configure backlinks buffer to always appear at the bottom
+    (add-to-list 'display-buffer-alist
+                 '("\\*org-roam\\*"
+                   (display-buffer-in-side-window)
+                   (side . bottom)
+                   (slot . 0)
+                   (window-width . 0.33)
+                   (window-height . 0.4)
+                   (window-parameters . ((no-delete-other-windows . t)))))
+    (org-roam-setup))
+  (org-roam-db-autosync-mode)
+
+  (require 'org-roam-dailies)
+
+
+#+end_src
+
+
+* Org-roam Daily
+
+Helper functions to open or create the daily
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun my/roam-dailies--today-filepath ()
+    "Return the absolute path of today’s Org-roam daily note."
+    (let* ((fname (format-time-string "%Y/%m-%B/%d-%B-%Y-%A.org" (current-time)))
+           (dir   (expand-file-name org-roam-dailies-directory
+                                    org-roam-directory)))
+      (expand-file-name fname dir)))
+    
+#+end_src
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun my/roam-dailies-goto-or-capture-today ()
+    "If today’s daily file exists, `goto` it; otherwise `capture` it."
+    (interactive)
+    (let ((file (my/roam-dailies--today-filepath)))
+      ;; ensure the dailies directory is there
+      (unless (file-directory-p (file-name-directory file))
+        (make-directory (file-name-directory file) :parents))
+      (if (file-exists-p file)
+          ;; ── already there → just visit it ──
+          (org-roam-dailies-goto-today)
+        ;; ── absent → create via your capture template “d” ──
+        (org-roam-dailies-capture-today))))
+
+    
+#+end_src
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun org-roam-dailies--list-files-recursively ()
+    "List all Org files in `org-roam-dailies-directory' and its subdirectories."
+    (let ((dailies-dir (expand-file-name org-roam-dailies-directory org-roam-directory)))
+      (directory-files-recursively dailies-dir "\\.org$")))
+
+  (advice-add 'org-roam-dailies--list-files :override #'org-roam-dailies--list-files-recursively)
+
+#+end_src
+
+
+** Daily Keybindings
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  ;(global-set-key (kbd "s-d") 'org-roam-dailies-goto-today)
+  (global-set-key (kbd "s-d") 'my/roam-dailies-goto-or-capture-today)
+  (global-set-key (kbd "s-c") 'org-roam-dailies-goto-date)
+  (global-set-key (kbd "s-a") (lambda () (interactive) (org-agenda nil "d")))
+  (global-set-key (kbd "C-s-{") 'org-roam-dailies-find-previous-note)
+  (global-set-key (kbd "C-s-}") 'org-roam-dailies-find-next-note)
+  (global-set-key (kbd "s-t") (lambda () (interactive) (org-capture nil "tt")))
+  (global-set-key (kbd "s-q") 'org-roam-node-insert-immediate)
+  (global-set-key (kbd "s-i") 'org-roam-node-insert)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-<tab>") 'org-shifttab)
+  (global-set-key (kbd "C-c s") 'org-store-link)
+    
+#+end_src
+
+
+** Org Agenda
+
+Show *Org Agenda* in a right‑side window (≈ 50 % of the frame)
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (add-to-list
+   'display-buffer-alist
+   '("^\\*Org Agenda\\*$"                           ; any agenda buffer
+     (display-buffer-reuse-window                  ; ► first try to reuse…
+      )               ; ► …else make a side‑window
+     (side         . right)                        ; right edge of the frame
+     (slot         . 0)                            ; topmost slot on that side
+     (window-width . 0.50)                         ; half the frame’s width
+     ;; optional niceties
+     ;;(window-parameters . ((no-delete-other-windows . t) ; keep layout stable
+     ;;                      ))
+     )) ; M‐p / M‐n ignore
+    
+#+end_src
+
+
+** Consult Org-roam
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (use-package consult-org-roam
+     :ensure t
+     :after org-roam
+     :init
+     (require 'consult-org-roam)
+     ;; Activate the minor mode
+     (consult-org-roam-mode 1)
+     :custom
+     ;; Use `ripgrep' for searching with `consult-org-roam-search'
+     ;(consult-org-roam-grep-func #'consult-ripgrep)
+     ;; Configure a custom narrow key for `consult-buffer'
+     (consult-org-roam-buffer-narrow-key ?r)
+     ;; Display org-roam buffers right after non-org-roam buffers
+     ;; in consult-buffer (and not down at the bottom)
+     (consult-org-roam-buffer-after-buffers t)
+     :config
+     ;; Eventually suppress previewing for certain functions
+     (consult-customize
+      consult-org-roam-forward-links
+      :preview-key "M-.")
+     :bind
+     ;; Define some convenient keybindings as an addition
+     ("C-c n e" . consult-org-roam-file-find)
+     ("C-c n b" . consult-org-roam-backlinks)
+     ("C-c n B" . consult-org-roam-backlinks-recursive)
+     ("C-c n b" . consult-org-roam-backlinks)     
+     ("C-c n l" . consult-org-roam-forward-links)
+     ("C-c n g" . consult-org-roam-search)
+     )
+    
+#+end_src
+
+
+* Setup Git Auto Commits
+
+Auto git every hour
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (defun my/org-notes-auto-commit ()
+    "Auto-commit and push all changes in the notes repository, including untracked files."
+    (let ((default-directory "~/RoamNotes")) ;; Replace with your notes repo path
+      (when (file-directory-p default-directory)
+        (require 'magit)
+        ;; Save all modified buffers before Git actions
+        (save-some-buffers t)
+        ;; Stage all changes
+        (magit-run-git "add" "-A")
+        ;; Commit only if something is staged
+        (when (magit-staged-files)
+          (magit-commit-create
+           `("-m" ,(format "Auto-commit notes: %s" (format-time-string "%F %T"))))
+  	(magit-push-current-to-pushremote nil)))))
+
+  (run-at-time "0 min" 3600 #'my/org-notes-auto-commit)
+
+#+end_src
+
+
+* Org Helper functions
+
+This function opens the Org link at point without selecting the window and binds it to =C-c p=
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (defun my/org-open-at-point-no-select ()
+    "Open the Org link at point but keep focus in the current window."
+    (interactive)
+    (save-selected-window
+      (org-open-at-point)))
+
+  ;; rebind C-c p in Org mode to our new version
+  (with-eval-after-load 'org
+    (define-key org-mode-map (kbd "C-c p") #'my/org-open-at-point-no-select))
+
+
+    
+#+end_src
+
+
+Also Bind to M-S-mouse click based on the position of the mouse.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+  
+  (defun my/org-open-at-point-no-select-mouse (event)
+    "Call my/org-open-at-point-no-select at the position of mouse click EVENT."
+    (interactive "e")
+    (let* ((pos (event-start event))
+           (window (posn-window pos))
+           (buffer (window-buffer window))
+           (position (posn-point pos)))
+      (with-current-buffer buffer
+        (goto-char position)
+        (my/org-open-at-point-no-select))))
+
+  (global-set-key [M-S-mouse-1] 'my/org-open-at-point-no-select-mouse)
+
+#+end_src
+
+
+* Org Contacts
+  
+Org-contacts configuration
+
+#+begin_src emacs-lisp   :tangle ~/dotfiles/init-org.el
+
+    (require 'org-contacts)
+    (setq org-contacts-files '("~/RoamNotes/Contacts.org"))
+
+#+end_src
+
+Helper functions for defining emails lists with tab completion
+  
+#+begin_src emacs-lisp   :tangle ~/dotfiles/init-org.el
+
+  (defun jda/org-contacts-groups ()
+     "Return a list of all unique group names in org-contacts."
+     (let ((groups '()))
+       (org-map-entries
+        (lambda ()
+          (let ((contact-groups (org-entry-get nil "GROUP")))
+            (when contact-groups
+              (dolist (group (split-string contact-groups))
+                (add-to-list 'groups group)))))
+        nil
+        (org-contacts-files))
+       groups))
+
+
+  (defun jda/insert-group-emails (group)
+     "Insert comma-separated list of emails for GROUP.
+   With completion for available groups."
+     (interactive
+      (list (completing-read "Group name: " (my/org-contacts-groups))))
+     (let ((emails (my/get-group-emails group)))
+       (insert (mapconcat 'identity emails ", "))))
+
+     
+#+end_src
+
+
+* Configure Babel Languages
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (python . t)))
+  
+  (setq org-babel-python-command "/opt/homebrew/bin/python3")
+  (setq org-confirm-babel-evaluate nil)
+
+
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+    
+#+end_src
+
+
+* GCal Integration
+
+Need to fix client secret with gnp
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+  
+  (require 'plstore)
+  (add-to-list 'plstore-encrypt-to "D37214566A581BF2")
+
+
+  (setq plstore-cache-passphrase-for-symmetric-encryption t)
+
+  (setq org-gcal-client-id "57759006028-j8fafbn9prevdvjihbrf7hslpf0g09aa.apps.googleusercontent.com"
+        org-gcal-client-secret "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"
+        org-gcal-fetch-file-alist '(("johnda102@gmail.com" .  "~/RoamNotes/gcal.org")))
+
+  (require 'org-gcal)
+  (setq org-gcal-auto-archive t)
+
+  ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
+  ;;(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
+
+    
+#+end_src
+
+
+* Mu4e
+
+Email
+
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  ;; adjust path if needed
+  (add-to-list 'load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e") 
+    
+#+end_src
+
+Org-mail captures
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun efs/capture-mail-follow-up (msg)
+    "Capture a follow-up task from an email."
+    (interactive)
+    (call-interactively 'org-store-link)
+    (org-capture nil "mf"))
+
+  (defun efs/capture-mail-read-later (msg)
+    "Capture a readlater task from an email."
+    (interactive)
+    (call-interactively 'org-store-link)
+    (org-capture nil "mr"))
+
+    
+#+end_src
+
+Main setup
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (use-package mu4e
+    :ensure nil
+    ;:load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
+    :defer 20 ; Wait until 20 seconds after startup
+    :bind(:map mu4e-search-minor-mode-map
+  	     ("M-<right>" . right-word)
+  	     ("M-<left>" .  left-word)
+  	     )
+    :bind(:map mu4e-compose-mode-map
+    	         ("M-n" .  forward-paragraph)
+  	     ("M-p" .  backward-paragraph)
+  	     )
+
+    :config
+    (require 'mu4e-org)
+    ;; This is set to 't' to avoid mail syncing issues when using mbsync
+    (setq mu4e-change-filenames-when-moving t)
+
+    ;; Refresh mail using isync every 30 minutes
+    (setq mu4e-update-interval (* 30 60))
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-maildir "~/Mail")
+    (setq mu4b-mu-binary "/opt/homebrew/bin/mu")
+    (setq user-mail-address  "johnalison@cmu.edu")
+    (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+    (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+    (setq mu4e-refile-folder "/[Gmail]/All Mail")
+    (setq mu4e-trash-folder  "/[Gmail]/Trash")
+    (setq mu4e-compose-format-flowed t)
+    (setq mu4e-compose-signature nil)
+
+    (setq mu4e-headers-show-threads nil)      ;; Main option to disable threading
+    (setq mu4e-headers-include-related nil)   ;; Don't include related messages
+    (setq mu4e-headers-skip-duplicates nil)   ;; Show all messages, even duplicates
+
+
+    ;; Add custom actions for our capture templates
+    (add-to-list 'mu4e-headers-actions
+  	       '("follow up" . efs/capture-mail-follow-up) t)
+    (add-to-list 'mu4e-view-actions
+  	       '("follow up" . efs/capture-mail-follow-up) t)
+    (add-to-list 'mu4e-headers-actions
+  	       '("read later" . efs/capture-mail-read-later) t)
+    (add-to-list 'mu4e-view-actions
+  	       '("read later" . efs/capture-mail-read-later) t)
+
+
+    (setq mu4e-bookmarks
+  	'(("flag:unread AND NOT flag:trashed" "Unread messages"      ?i)
+  	  ("flag:flagged AND NOT flag:trashed"                     "Flagged"             ?f)
+  	  ("maildir:\"/Inbox\" and date:today..now AND NOT flag:trashed"                  "Today's messages"     ?t)
+  	  ("maildir:\"/Inbox\" and date:7d..now AND NOT flag:trashed"                  "This Weeks's messages"     ?w)
+  	  ("maildir:\"/Inbox\" and date:30d..now AND NOT flag:trashed"                  "This Months's messages"     ?m)
+  	))
+
+
+    (setq mu4e-maildir-shortcuts
+        '(("/Inbox"             . ?i)
+          ("/[Gmail]/Sent Mail" . ?s)
+          ("/[Gmail]/Trash"     . ?t)
+          ;;("/[Gmail]/Important" . ?m)
+          ("/[Gmail]/Drafts"    . ?d)
+          ("/[Gmail]/All Mail"  . ?a)))
+
+    (setq
+     message-send-mail-function 'smtpmail-send-it
+     smtpmail-smtp-user "johnda102@gmail.com"
+     smtpmail-smtp-server "smtp.gmail.com"
+     smtpmail-smtp-service 587
+     smtpmail-stream-type 'starttls
+     smtpmail-auth-credentials "~/.authinfo.gpg")
+
+
+    (mu4e t)
+    )
+
+    
+#+end_src
+
 
 ** Auto-tangle configuration files
 
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
-
+  
   ;; Automatically tangle our Emacs.org config file when we save it
   (defun efs/org-babel-tangle-config ()
     (when (string-equal (buffer-file-name)
@@ -607,7 +1240,4 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 #+end_src
-
-
-
 
