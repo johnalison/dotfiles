@@ -1,5 +1,5 @@
 #+title: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init-new.el
+#+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init.el
 
 
 * Package System Setup
@@ -475,17 +475,6 @@ The `dired' package is the built-in file manager of Emacs.
 
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
-
-#+end_src
-
-
-* Emacs vs Emacs -nw config
-
-#+begin_src emacs-lisp
-
-  (unless (eq window-system nil)
-    (use-package doom-themes
-      :init (load-theme 'modus-operandi t)))
 
 #+end_src
 
@@ -1084,6 +1073,16 @@ Helper functions for defining emails lists with tab completion
 
 * GCal Integration
 
+#+begin_src emacs-lisp ~/dotfiles/init-org.el
+
+  (defun efs/lookup-password (&rest keys)
+    (let ((result (apply #'auth-source-search keys)))
+      (if result
+          (funcall (plist-get (car result) :secret))
+          nil)))
+    
+#+end_src
+
 Need to fix client secret with gnp
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
@@ -1095,7 +1094,7 @@ Need to fix client secret with gnp
   (setq plstore-cache-passphrase-for-symmetric-encryption t)
 
   (setq org-gcal-client-id "57759006028-j8fafbn9prevdvjihbrf7hslpf0g09aa.apps.googleusercontent.com"
-        org-gcal-client-secret "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"
+        org-gcal-client-secret (efs/lookup-password :host "org-gal-client")
         org-gcal-fetch-file-alist '(("johnda102@gmail.com" .  "~/RoamNotes/gcal.org")))
 
   (require 'org-gcal)
@@ -1241,3 +1240,16 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 #+end_src
 
+
+* Emacs vs Emacs -nw config
+
+#+begin_src emacs-lisp
+
+  (unless (eq window-system nil)
+    (use-package doom-themes
+      :init (load-theme 'modus-operandi t)))
+
+  (unless (eq window-system nil)
+    (load "~/dotfiles/init-org.el"))
+    
+#+end_src
