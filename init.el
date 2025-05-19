@@ -106,10 +106,10 @@
 (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key (kbd "C-?") 'help-command)
 (global-set-key "\M-h" 'backward-kill-word)
-(global-set-key "\M-w" 'ispell-word)
+;(global-set-key "\M-w" 'ispell-word)
 (global-set-key "\M-#" 'ispell-region)
 
-(global-set-key "\C-l" 'goto-line)
+;(global-set-key "\C-l" 'goto-line)
 (global-set-key "\M-n" 'forward-paragraph)
 (global-set-key "\M-p" 'backward-paragraph)
 

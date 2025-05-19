@@ -170,10 +170,10 @@ Save hist
   (global-set-key "\C-h" 'delete-backward-char)
   (global-set-key (kbd "C-?") 'help-command)
   (global-set-key "\M-h" 'backward-kill-word)
-  (global-set-key "\M-w" 'ispell-word)
+  ;(global-set-key "\M-w" 'ispell-word)
   (global-set-key "\M-#" 'ispell-region)
 
-  (global-set-key "\C-l" 'goto-line)
+  ;(global-set-key "\C-l" 'goto-line)
   (global-set-key "\M-n" 'forward-paragraph)
   (global-set-key "\M-p" 'backward-paragraph)
 
@@ -1086,7 +1086,7 @@ Helper functions for defining emails lists with tab completion
 Need to fix client secret with gnp
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
-  
+
   (require 'plstore)
   (add-to-list 'plstore-encrypt-to "D37214566A581BF2")
 
@@ -1099,11 +1099,12 @@ Need to fix client secret with gnp
 
   (require 'org-gcal)
   (setq org-gcal-auto-archive t)
+  (setq org-gcal-remove-api-cancelled-events t)
 
   ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
   ;;(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
 
-    
+
 #+end_src
 
 

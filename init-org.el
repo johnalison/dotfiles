@@ -398,6 +398,7 @@
 
 (require 'org-gcal)
 (setq org-gcal-auto-archive t)
+(setq org-gcal-remove-api-cancelled-events t)
 
 ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
 ;;(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
