@@ -173,6 +173,8 @@
 (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
 (setq warning-suppress-types '((copilot)))
 
+(use-package copilot-chat)
+
 ;; Setting up gptel
 (add-to-list 'load-path "~/emacs/gptel")
 (use-package gptel

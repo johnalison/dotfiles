@@ -350,26 +350,41 @@
 (setq org-contacts-files '("~/RoamNotes/Contacts.org"))
 
 (defun jda/org-contacts-groups ()
-   "Return a list of all unique group names in org-contacts."
-   (let ((groups '()))
-     (org-map-entries
-      (lambda ()
-        (let ((contact-groups (org-entry-get nil "GROUP")))
-          (when contact-groups
-            (dolist (group (split-string contact-groups))
-              (add-to-list 'groups group)))))
-      nil
-      (org-contacts-files))
-     groups))
+  "Return a list of all unique group names in org-contacts."
+  (let ((groups '()))
+    (org-map-entries
+     (lambda ()
+       (let ((contact-groups (org-entry-get nil "GROUP")))
+         (when contact-groups
+           (dolist (group (split-string contact-groups))
+             (add-to-list 'groups group)))))
+     nil
+     (org-contacts-files))
+    groups))
+
+
+(defun jda/get-group-emails (group)
+  "Return a list of emails for contacts in GROUP."
+  (let ((emails '()))
+    (org-map-entries
+     (lambda ()
+       (let ((contact-groups (org-entry-get nil "GROUP"))
+             (email (org-entry-get nil "EMAIL")))
+	 (when (and contact-groups email
+                    (string-match (regexp-quote group) contact-groups))
+           (push email emails))))
+     nil
+     (org-contacts-files))
+    emails))
 
 
 (defun jda/insert-group-emails (group)
-   "Insert comma-separated list of emails for GROUP.
+  "Insert comma-separated list of emails for GROUP.
  With completion for available groups."
-   (interactive
-    (list (completing-read "Group name: " (my/org-contacts-groups))))
-   (let ((emails (my/get-group-emails group)))
-     (insert (mapconcat 'identity emails ", "))))
+  (interactive
+   (list (completing-read "Group name: " (jda/org-contacts-groups))))
+  (let ((emails (jda/get-group-emails group)))
+    (insert (mapconcat 'identity emails ", "))))
 
 (org-babel-do-load-languages
   'org-babel-load-languages
@@ -448,6 +463,7 @@
   (setq mu4e-trash-folder  "/[Gmail]/Trash")
   (setq mu4e-compose-format-flowed t)
   (setq mu4e-compose-signature nil)
+  (setq mu4e-attachment-dir "~/Downloads")
 
   (setq mu4e-headers-show-threads nil)      ;; Main option to disable threading
   (setq mu4e-headers-include-related nil)   ;; Don't include related messages
