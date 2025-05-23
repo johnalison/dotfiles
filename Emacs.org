@@ -44,7 +44,7 @@ Simplify the UI
 
   ;; Set up the visible bell
   (setq ring-bell-function 'ignore)
-
+  (setq sentence-end-double-space nil)
 
 #+end_src
 
@@ -296,12 +296,16 @@ https://github.com/copilot-emacs/copilot.el
 #+end_src
 
 Chat: https://github.com/chep/copilot-chat.el
+ 
+Automatically make git commit messages.
 
 #+begin_src emacs-lisp
 
-  (use-package copilot-chat)
+  (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
+  (global-set-key (kbd "C-c c") 'copilot-chat-transient)
 
 #+end_src
+
 
 * GPTel
 
@@ -310,7 +314,8 @@ Chat: https://github.com/chep/copilot-chat.el
 
 
   ;; Setting up gptel
-  (add-to-list 'load-path "~/emacs/gptel")
+  ;; (add-to-list 'load-path "~/emacs/gptel")
+
   (use-package gptel
     :ensure t
     :config
@@ -320,7 +325,11 @@ Chat: https://github.com/chep/copilot-chat.el
     ;; or, read from your shell’s env var:
     (setq gptel-api-key (getenv "OPENAI_API_KEY")))
 
-  (global-set-key (kbd "C-c RET") 'gptel-send)
+
+  (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
+  (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
+
+  (global-set-key (kbd "C-c g") 'gptel-send)
   (global-set-key (kbd "C-c m") 'gptel-menu)
 
 
@@ -331,9 +340,6 @@ Chat: https://github.com/chep/copilot-chat.el
         (call-interactively 'gptel-menu)
       (gptel--suffix-send (transient-args 'gptel-menu))))
 
-  (global-set-key (kbd "C-c g") #'my-gptel-send-via-minibuffer-and-echo)
-
-  (add-to-list 'load-path "~/emacs/gptel-quick/")
 
   ;; Optional defaults
   (setq gptel-use-tools t                 ; allow tool use by default
@@ -341,13 +347,48 @@ Chat: https://github.com/chep/copilot-chat.el
         gptel-include-tool-results nil)     ; echo results back to the model
 
 
+  (gptel-make-preset 'proofreading
+    :description "Preset for proofreading tasks"
+    :system "Please copy edit this text. The replace will applied in place so only return the edited text."
+    :use-context 'system)
+
+
+
 #+end_src
 
+Look up function
+
+#+begin_src emacs-lisp
+
+  (defvar gptel-lookup--history nil)
+
+  (defun gptel-lookup (prompt)
+    (interactive (list (read-string "Ask ChatGPT: " nil gptel-lookup--history)))
+    (when (string= prompt "") (user-error "A prompt is required."))
+    (gptel-request
+        prompt
+      :system "You LLM living in Emacs and a helpful assistant. Be concise"      ;; <- Your system directive here
+      :callback
+      (lambda (response info)
+        (if (not response)
+            (message "gptel-lookup failed with message: %s" (plist-get info :status))
+  	(with-current-buffer (get-buffer-create "*gptel-lookup*")
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (insert response))
+            (special-mode)
+            (display-buffer (current-buffer)
+                            `((display-buffer-in-side-window)
+                              (side . bottom)
+                              (window-height . ,#'fit-window-to-buffer))))))))
+
+
+#+end_src
 
 
 * Vertigo
 
-The [[https://protesilaos.com/emacs/dotemacs#h:cff33514-d3ac-4c16-a889-ea39d7346dc5][Vertigo]] package applies a vertical layout to the minibuffer. It also pops up the minibuffer eagerly so we can see the available options without further interactions. This package is very fast and "just works", though it also is highly customisable in case we need to modify its behaviour.
+The [[https://github.com/minad/vertico][Vertigo]] package applies a vertical layout to the minibuffer. It also pops up the minibuffer eagerly so we can see the available options without further interactions. This package is very fast and "just works", though it also is highly customisable in case we need to modify its behaviour.
 
 
 #+begin_src emacs-lisp
@@ -358,6 +399,13 @@ The [[https://protesilaos.com/emacs/dotemacs#h:cff33514-d3ac-4c16-a889-ea39d7346
     (vertico-cycle t)
     :init
     (vertico-mode))
+
+
+  (keymap-set vertico-map "?" #'minibuffer-completion-help)
+  (keymap-set vertico-map "M-RET" #'minibuffer-force-complete-and-exit)
+  (keymap-set vertico-map "M-TAB" #'minibuffer-complete)
+  (keymap-set vertico-map "TAB" #'minibuffer-complete)
+
 
 #+end_src
 
@@ -437,7 +485,7 @@ The `dired' package is the built-in file manager of Emacs.
 
 #+begin_src emacs-lisp
 
-  
+
   (use-package dired
     :ensure nil              ;; dired is built-in
     :bind (:map dired-mode-map
@@ -461,6 +509,7 @@ The `dired' package is the built-in file manager of Emacs.
     ;; -- OR! --
     (setq dired-open-extensions '(("key" . "open")
   				("docx". "open")
+  				("xlsx". "open")
   				("pdf" . "open"))))
 
 
@@ -622,6 +671,8 @@ This section contains the basic configuration for org-mode plus the configuratio
   		  ((org-agenda-overriding-header "To do:")))
   	    (todo "Waiting"
   		  ((org-agenda-overriding-header "Waiting on")))
+  	    (todo "TODO"
+  		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
   	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
   	    ))
 
@@ -1069,6 +1120,19 @@ Helper functions for defining emails lists with tab completion
 #+end_src
 
 
+* Org-download
+
+https://github.com/abo-abo/org-download
+
+#+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
+
+  (require 'org-download)
+
+  (add-hook 'dired-mode-hook 'org-download-enable)
+
+#+end_src
+
+
 * Configure Babel Languages
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
@@ -1192,7 +1256,8 @@ Main setup
     (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
     (setq mu4e-refile-folder "/[Gmail]/All Mail")
     (setq mu4e-trash-folder  "/[Gmail]/Trash")
-    (setq mu4e-compose-format-flowed t)
+    ;;(setq mu4e-compose-format-flowed t)
+    (setq mu4e-compose-format-flowed nil)
     (setq mu4e-compose-signature nil)
     (setq mu4e-attachment-dir "~/Downloads")
 
@@ -1263,6 +1328,44 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 #+end_src
 
+
+* Languages
+
+Fly check
+
+#+begin_src emacs-lisp
+
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+    
+#+end_src
+
+** Language Servers
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    :config
+    (lsp-enable-which-key-integration t))
+
+#+end_src
+
+
+
+
+** Python
+
+#+begin_src emacs-lisp
+
+  (use-package python-mode
+    :ensure nil
+    :hook (python-mode . lsp-deferred))
+   
+#+end_src
 
 * Emacs vs Emacs -nw config
 

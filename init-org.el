@@ -97,6 +97,8 @@
 		  ((org-agenda-overriding-header "To do:")))
 	    (todo "Waiting"
 		  ((org-agenda-overriding-header "Waiting on")))
+	    (todo "TODO"
+		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
 	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
 	    ))
 
@@ -386,6 +388,10 @@
   (let ((emails (jda/get-group-emails group)))
     (insert (mapconcat 'identity emails ", "))))
 
+(require 'org-download)
+
+(add-hook 'dired-mode-hook 'org-download-enable)
+
 (org-babel-do-load-languages
   'org-babel-load-languages
   '((emacs-lisp . t)
@@ -461,7 +467,8 @@
   (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
   (setq mu4e-refile-folder "/[Gmail]/All Mail")
   (setq mu4e-trash-folder  "/[Gmail]/Trash")
-  (setq mu4e-compose-format-flowed t)
+  ;;(setq mu4e-compose-format-flowed t)
+  (setq mu4e-compose-format-flowed nil)
   (setq mu4e-compose-signature nil)
   (setq mu4e-attachment-dir "~/Downloads")
 

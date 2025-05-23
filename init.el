@@ -25,6 +25,7 @@
 
 ;; Set up the visible bell
 (setq ring-bell-function 'ignore)
+(setq sentence-end-double-space nil)
 
 ;; Set the fixed pitch face
 (set-face-attribute 'default nil :height 150) ;; 15pt font
@@ -173,10 +174,12 @@
 (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
 (setq warning-suppress-types '((copilot)))
 
-(use-package copilot-chat)
+(add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
+(global-set-key (kbd "C-c c") 'copilot-chat-transient)
 
 ;; Setting up gptel
-(add-to-list 'load-path "~/emacs/gptel")
+;; (add-to-list 'load-path "~/emacs/gptel")
+
 (use-package gptel
   :ensure t
   :config
@@ -186,7 +189,11 @@
   ;; or, read from your shell’s env var:
   (setq gptel-api-key (getenv "OPENAI_API_KEY")))
 
-(global-set-key (kbd "C-c RET") 'gptel-send)
+
+(add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
+(add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
+
+(global-set-key (kbd "C-c g") 'gptel-send)
 (global-set-key (kbd "C-c m") 'gptel-menu)
 
 
@@ -197,14 +204,39 @@
       (call-interactively 'gptel-menu)
     (gptel--suffix-send (transient-args 'gptel-menu))))
 
-(global-set-key (kbd "C-c g") #'my-gptel-send-via-minibuffer-and-echo)
-
-(add-to-list 'load-path "~/emacs/gptel-quick/")
 
 ;; Optional defaults
 (setq gptel-use-tools t                 ; allow tool use by default
       gptel-confirm-tool-calls nil        ; ask before each invocation
       gptel-include-tool-results nil)     ; echo results back to the model
+
+
+(gptel-make-preset 'proofreading
+  :description "Preset for proofreading tasks"
+  :system "Please copy edit this text. The replace will applied in place so only return the edited text."
+  :use-context 'system)
+
+(defvar gptel-lookup--history nil)
+
+(defun gptel-lookup (prompt)
+  (interactive (list (read-string "Ask ChatGPT: " nil gptel-lookup--history)))
+  (when (string= prompt "") (user-error "A prompt is required."))
+  (gptel-request
+      prompt
+    :system "You LLM living in Emacs and a helpful assistant. Be concise"      ;; <- Your system directive here
+    :callback
+    (lambda (response info)
+      (if (not response)
+          (message "gptel-lookup failed with message: %s" (plist-get info :status))
+	(with-current-buffer (get-buffer-create "*gptel-lookup*")
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (insert response))
+          (special-mode)
+          (display-buffer (current-buffer)
+                          `((display-buffer-in-side-window)
+                            (side . bottom)
+                            (window-height . ,#'fit-window-to-buffer))))))))
 
 (use-package vertico
   :ensure t
@@ -212,6 +244,12 @@
   (vertico-cycle t)
   :init
   (vertico-mode))
+
+
+(keymap-set vertico-map "?" #'minibuffer-completion-help)
+(keymap-set vertico-map "M-RET" #'minibuffer-force-complete-and-exit)
+(keymap-set vertico-map "M-TAB" #'minibuffer-complete)
+(keymap-set vertico-map "TAB" #'minibuffer-complete)
 
 (use-package marginalia
   :after vertico
@@ -266,6 +304,7 @@
   ;; -- OR! --
   (setq dired-open-extensions '(("key" . "open")
 				("docx". "open")
+				("xlsx". "open")
 				("pdf" . "open"))))
 
 
@@ -299,6 +338,21 @@
     (if result
         (funcall (plist-get (car result) :secret))
         nil)))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package python-mode
+  :ensure nil
+  :hook (python-mode . lsp-deferred))
 
 (unless (eq window-system nil)
   (use-package doom-themes
