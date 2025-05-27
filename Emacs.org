@@ -21,7 +21,7 @@
 
   ;;(require 'use-package)
   ;;'(setq use-package-always-ensure t)
-  
+
 
 #+end_src
 
@@ -56,9 +56,9 @@ Fonts
   (set-face-attribute 'default nil :height 150) ;; 15pt font
 
   ;; Set the variable pitch face
-  ;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+  					;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
   (set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
-    
+
 #+end_src
 
 No Backup files
@@ -170,10 +170,10 @@ Save hist
   (global-set-key "\C-h" 'delete-backward-char)
   (global-set-key (kbd "C-?") 'help-command)
   (global-set-key "\M-h" 'backward-kill-word)
-  ;(global-set-key "\M-w" 'ispell-word)
+  ;;(global-set-key "\M-w" 'ispell-word)
   (global-set-key "\M-#" 'ispell-region)
 
-  ;(global-set-key "\C-l" 'goto-line)
+  					;(global-set-key "\C-l" 'goto-line)
   (global-set-key "\M-n" 'forward-paragraph)
   (global-set-key "\M-p" 'backward-paragraph)
 
@@ -208,7 +208,7 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
   (use-package counsel
     :bind (("M-X" . counsel-M-x)
            ("C-x B" . counsel-ibuffer)
-           ;("C-x F" . counsel-find-file)
+  	 ;;("C-x F" . counsel-find-file)
            :map minibuffer-local-map
            ("C-r" . 'counsel-minibuffer-history)))
 
@@ -239,17 +239,17 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
 
 #+begin_src emacs-lisp
 
-; Check buffer exists before switching there
-(defadvice switch-to-buffer (before existing-buffer
-				    activate compile)
-  "When interactive, swtich to existing buffers only,
-   unless given a prefex argument."
-  (interactive
-   (list (read-buffer "Switch to buffer: "
-		      (other-buffer)
-		      (null current-prefix-arg)))))
+  					; Check buffer exists before switching there
+  (defadvice switch-to-buffer (before existing-buffer
+  				    activate compile)
+    "When interactive, swtich to existing buffers only,
+     unless given a prefex argument."
+    (interactive
+     (list (read-buffer "Switch to buffer: "
+  		      (other-buffer)
+  		      (null current-prefix-arg)))))
 
-  
+
 #+end_src
 
 
@@ -291,9 +291,13 @@ https://github.com/copilot-emacs/copilot.el
   (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
+  (define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
+
   (setq warning-suppress-types '((copilot)))
 
 #+end_src
+
 
 Chat: https://github.com/chep/copilot-chat.el
  
@@ -1364,7 +1368,51 @@ Fly check
   (use-package python-mode
     :ensure nil
     :hook (python-mode . lsp-deferred))
+
+  (use-package pyvenv
+    :config
+    (pyvenv-mode 1))
+
+
+  (use-package lsp-mode
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :custom
+    ;; Configure pylsp to use pylint
+    (lsp-pylsp-plugins-pylint-enabled t)
+    (lsp-pylsp-plugins-flake8-enabled nil)
+
+    (lsp-pylsp-plugins-autopep8-enabled t) ;; Turn on for code style
+    (lsp-pylsp-plugins-black-enabled nil)
+    (lsp-pylsp-plugins-yapf-enabled nil)
+
+    (lsp-pylsp-plugins-pycodestyle-enabled nil)
+    (lsp-pylsp-plugins-pyflakes-enabled nil)
+    (lsp-pylsp-plugins-pylint-args ["--max-line-length=88" "--disable=C0103"]))
+
+#+end_src
+
+** Company
+
+#+begin_src emacs-lisp
    
+;;;    (use-package company
+;;;      :after lsp-mode
+;;;      :hook (prog-mode . company-mode)
+;;;      :bind (:map company-active-map
+;;;  		("<tab>" . company-complete-selection)
+;;;  		("C-h" .   nil)
+;;;  		("C-?" .   company-show-doc-buffer)
+;;;  		)
+;;;            (:map lsp-mode-map
+;;;             ("<tab>" . company-indent-or-complete-common))
+;;;      :custom
+;;;      (company-minimum-prefix-length 1)
+;;;      (company-idle-delay 0.0))
+;;;
+;;;  ;;   (use-package company-box
+;;;  ;;    :hook (company-mode . company-box-mode))
+      
 #+end_src
 
 * Emacs vs Emacs -nw config
