@@ -235,7 +235,9 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
 #+end_src
 
 
-* Check Buffer before switching
+* Buffers
+
+** Check Buffer before switching
 
 #+begin_src emacs-lisp
 
@@ -252,6 +254,50 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
 
 #+end_src
 
+** Buffer placement
+
+#+begin_src emacs-lisp
+
+
+  (setq display-buffer-alist
+        '(
+
+  	;; Anatomy of a an entry:
+  	;; (BUFFER-MATCHER
+  	;;  LIST-OF-DISPLAY-ACTIONS
+  	;;  &optional PARAMETERS)
+
+  	("\\*Org todo\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-below-selected)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (dedicated . t)
+  	 )
+
+  	("\\*wclock\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-below-selected)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (dedicated . t)
+  	 )
+
+  	
+  	))
+
+#+end_src
+
+
+Ediff
+
+#+begin_src emacs-lisp
+
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+#+end_src
 
 * Text Editing 
 
@@ -291,8 +337,12 @@ https://github.com/copilot-emacs/copilot.el
   (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)  
+
   (define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
   (define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "C-g") 'copilot-clear-overlay)
 
   (setq warning-suppress-types '((copilot)))
 
@@ -360,7 +410,7 @@ Automatically make git commit messages.
 
 #+end_src
 
-Look up function
+Look up function... Should probalbly being gptel-quick instead !
 
 #+begin_src emacs-lisp
 
@@ -471,6 +521,52 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 #+end_src
 
 
+* Embark
+
+[[https://github.com/oantolin/embark][embark]]
+#+begin_src emacs-lisp
+
+    (use-package embark
+      :ensure t
+
+      :bind
+      (("C-." . embark-act)         ;; pick some comfortable binding
+       ("C-;" . embark-dwim)        ;; good alternative: M-.
+       ;("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+       ) 
+
+      :init
+
+      ;; Optionally replace the key help with a completing-read interface
+      (setq prefix-help-command #'embark-prefix-help-command)
+
+      ;; Show the Embark target at point via Eldoc. You may adjust the
+      ;; Eldoc strategy, if you want to see the documentation from
+      ;; multiple providers. Beware that using this can be a little
+      ;; jarring since the message shown in the minibuffer can be more
+      ;; than one line, causing the modeline to move up and down:
+
+      ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+      ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+      :config
+
+      ;; Hide the mode line of the Embark live/completions buffers
+      (add-to-list 'display-buffer-alist
+                   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                     nil
+                     (window-parameters (mode-line-format . none)))))
+
+
+    ;; Consult users will also want the embark-consult package.
+    (use-package embark-consult
+      :ensure t ; only need to install it, embark loads it after consult if found
+      :hook
+      (embark-collect-mode . consult-preview-at-point-mode))
+
+
+#+end_src
+
 * Magit
 
  The `magit' package is a powerful interface to Git.
@@ -540,19 +636,34 @@ The `dired' package is the built-in file manager of Emacs.
 
 * Tramps 
 
+LPC
+
 #+begin_src emacs-lisp
 
   (setq remote-lpc-coffea4bees-path "/ssh:jda102@cmslpc-el9.fnal.gov:/uscms/home/jda102/nobackup/HH4b/Run3/coffea4bees/")
 
   ;; Example of using the variable
   (defun open-lpc-coffea4bees ()
-    "Open the remote HH4b directory."
+    "Open the remote HH4b directory on the LPC."
     (interactive)
     (find-file remote-lpc-coffea4bees-path))
     
 #+end_src
 
+Falcon
 
+#+begin_src emacs-lisp
+
+  (setq remote-falcon-coffea4bees-path "/ssh:jalison@falcon.phys.cmu.edu:/home/export/jalison/work/coffea4bees/python")
+
+  ;; Example of using the variable
+  (defun open-falcon-coffea4bees ()
+    "Open the remote HH4b directory on falcon.phys.cmu.edu"
+    (interactive)
+    (find-file remote-falcon-coffea4bees-path))
+
+
+#+end_src
 
   
 * Org Mode
@@ -616,12 +727,12 @@ This section contains the basic configuration for org-mode plus the configuratio
     :config
     (setq org-ellipsis " ▾")
     (setq org-agenda-files
-  	'("~/RoamNotes/Tasks.org"
-  	  "~/RoamNotes/Mail.org"
-  	  "~/RoamNotes/Archive.org"
-  	  "~/RoamNotes/Birthdays.org"
-  	  "~/RoamNotes/gcal.org"
-  	  ))
+    	'("~/RoamNotes/Tasks.org"
+    	  "~/RoamNotes/Mail.org"
+    	  "~/RoamNotes/Archive.org"
+    	  "~/RoamNotes/Birthdays.org"
+    	  "~/RoamNotes/gcal.org"
+    	  ))
     (setq org-hide-emphasis-markers t)
     (setq org-hide-block-startup t)
     (efs/org-font-setup)
@@ -633,96 +744,99 @@ This section contains the basic configuration for org-mode plus the configuratio
 
 
     (setq org-todo-keywords
-  	'((sequence "TODO(t)" "The ONE thing(o)" "Now(n)" "Someday Maybe(s)" "Waiting(w)" "|" "CANCEL(c!)" "DONE(d!)")
-  	  ))
+    	'((sequence "TODO(t)" "The ONE thing(o)" "Now(n)" "Someday Maybe(s)" "Waiting(w)" "Planned(p)" "|" "CANCEL(c!)" "DONE(d!)")
+    	  ))
 
     (setq org-refile-targets
-  	'(("Archive.org" :maxlevel . 1)
-  	  ("Tasks.org" :maxlevel . 1)
-  	  ))
+    	'(("Archive.org" :maxlevel . 1)
+    	  ("Tasks.org" :maxlevel . 1)
+    	  ))
 
     ;; Save Org buffers after refiling!
     (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
     ;;
     (setq org-tag-alist
-  	'((:startgroup)
-  					; Put mutually exclusive tags here
-  	  (:endgroup)
-  	  ;;("@errand" . ?E)
-  	  ;;("@home" . ?H)
-  	  ;;("@work" . ?W)
-  	  ;;("meeting" . ?m)
-  	  ;;("planning" . ?p)
-  	  ("teaching" . ?t)
-  	  ("emacs" . ?e)
-  	  ("HGC" . ?H)
-  	  ("4b" . ?4)
-  	  ("bbWW" . ?W)
-  	  ;;("publish" . ?P)
-  	  ("idea" . ?i)
-  	  ("question" . ?q)
-  	  ))
+    	'((:startgroup)
+    					; Put mutually exclusive tags here
+    	  (:endgroup)
+    	  ;;("@errand" . ?E)
+    	  ;;("@home" . ?H)
+    	  ;;("@work" . ?W)
+    	  ;;("meeting" . ?m)
+    	  ;;("planning" . ?p)
+    	  ("teaching" . ?t)
+    	  ("emacs" . ?e)
+    	  ("HGC" . ?H)
+    	  ("4b" . ?4)
+    	  ("bbWW" . ?W)
+    	  ;;("publish" . ?P)
+    	  ("idea" . ?i)
+    	  ("question" . ?q)
+    	  ))
 
 
     ;; Configure custom agenda views
     (setq org-agenda-custom-commands
-  	'(("d" "Dashboard"
-  	   ((agenda "" ((org-deadline-warning-days 7)))
-  	    (todo "The ONE thing"
-  		  ((org-agenda-overriding-header "The ONE Thing")))
-  	    (todo "Now"
-  		  ((org-agenda-overriding-header "To do:")))
-  	    (todo "Waiting"
-  		  ((org-agenda-overriding-header "Waiting on")))
-  	    (todo "TODO"
-  		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
-  	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
-  	    ))
+    	'(("d" "Dashboard"
+    	   ((agenda "" ((org-deadline-warning-days 7)))
+    	    (todo "The ONE thing"
+    		  ((org-agenda-overriding-header "The ONE Thing")))
+    	    (todo "Now"
+    		  ((org-agenda-overriding-header "To do:")))
+    	    (todo "Waiting"
+    		  ((org-agenda-overriding-header "Waiting on")))
+    	    (todo "TODO"
+    		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
+    	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
+    	    ))
 
-  	  ("t" "To do"
-  	   ((todo "TODO"
-  		  ((org-agenda-overriding-header "Open Items")))))
+    	  ("t" "To do"
+    	   ((todo "TODO"
+    		  ((org-agenda-overriding-header "Open Items")))))
 
-  	  ("n" "To do now"
-  	   ((todo "Now"
-  		  ((org-agenda-overriding-header "Now:")))))
+    	  ("n" "To do now"
+    	   ((todo "Now"
+    		  ((org-agenda-overriding-header "Now:")))))
 
 
-  	  ("o" "The ONE Thing"
-  	   ((todo "The ONE thing"
-  		  ((org-agenda-overriding-header "The ONE Thing")))))
+    	  ("o" "The ONE Thing"
+    	   ((todo "The ONE thing"
+    		  ((org-agenda-overriding-header "The ONE Thing")))))
 
-  	  ("s" "Someday Maybe"
-  	   ((todo "Someday Maybe"
-  		  ((org-agenda-overriding-header "Someday Maybe")))))
+    	  ("s" "Someday Maybe"
+    	   ((todo "Someday Maybe"
+    		  ((org-agenda-overriding-header "Someday Maybe")))))
 
-  	  ;; The + [tag-name] means that the tag is required the - [tag-name] means that the tag is excluded
-  	  ;;("W" "Work Tasks" tags-todo "+work-email")
+    	  ;; The + [tag-name] means that the tag is required the - [tag-name] means that the tag is excluded
+    	  ;;("W" "Work Tasks" tags-todo "+work-email")
 
-  	  ))
+    	  ))
 
     (setq org-capture-templates
-  	`(("a" "Appointment" entry (file "~/RoamNotes/gcal.org" )
-  	   "* %?")
-  	  ("t" "Tasks / Projects")
+    	`(("a" "Appointment" entry (file "~/RoamNotes/gcal.org" )
+    	   "* %?")
+    	  ("t" "Tasks / Projects")
 
-  	  ;; %? is for the cursor /  %U is the time stamp  / %a is the link to the file / %i is the current region
-  	  ;;("tt" "Task" entry (file+olp "~/RoamNotes/Tasks.org" "Inbox")
-  	  ;; "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-  	  ("tt" "Task" entry (file "~/RoamNotes/Tasks.org")
+    	  ;; %? is for the cursor /  %U is the time stamp  / %a is the link to the file / %i is the current region
+    	  ;;("tt" "Task" entry (file+olp "~/RoamNotes/Tasks.org" "Inbox")
+    	  ;; "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+    	  ("tt" "Task" entry (file "~/RoamNotes/Tasks.org")
              "* TODO %?\n  %U\n " :empty-lines 1)
 
-  	  ("m", "Email Workflow")
-  	  ("mf", "Follow Up" entry (file+olp "~/RoamNotes/Mail.org" "Follow Up")
-  	   "* TODO %a\n\n %i"
-  	   :immediate-finish t)
+    	  ("m", "Email Workflow")
+    	  ("mf", "Follow Up" entry (file+olp "~/RoamNotes/Mail.org" "Follow Up")
+    	   "* TODO %a\n\n %i"
+    	   :immediate-finish t)
 
-  	  ("mr", "Read Later" entry (file+olp "~/RoamNotes/Mail.org" "Read Later")
-  	   "* TODO %a\n\n %i"
-  	   :immediate-finish t))
-  	)
+    	  ("mr", "Read Later" entry (file+olp "~/RoamNotes/Mail.org" "Read Later")
+    	   "* TODO %a\n\n %i"
+    	   :immediate-finish t))
+    	)
     )
+
+  (add-hook 'org-mode-hook 'abbrev-mode)
+
 
 #+end_src
 
@@ -1083,7 +1197,7 @@ Helper functions for defining emails lists with tab completion
   
 #+begin_src emacs-lisp   :tangle ~/dotfiles/init-org.el
 
-  (defun jda/org-contacts-groups ()
+  (defun jda/org--contacts-groups ()
     "Return a list of all unique group names in org-contacts."
     (let ((groups '()))
       (org-map-entries
@@ -1097,7 +1211,7 @@ Helper functions for defining emails lists with tab completion
       groups))
 
 
-  (defun jda/get-group-emails (group)
+  (defun jda/get--group-emails (group)
     "Return a list of emails for contacts in GROUP."
     (let ((emails '()))
       (org-map-entries
@@ -1116,8 +1230,8 @@ Helper functions for defining emails lists with tab completion
     "Insert comma-separated list of emails for GROUP.
    With completion for available groups."
     (interactive
-     (list (completing-read "Group name: " (jda/org-contacts-groups))))
-    (let ((emails (jda/get-group-emails group)))
+     (list (completing-read "Group name: " (jda/org--contacts-groups))))
+    (let ((emails (jda/get--group-emails group)))
       (insert (mapconcat 'identity emails ", "))))
 
 
@@ -1187,7 +1301,9 @@ Need to fix client secret with gnp
         org-gcal-fetch-file-alist '(("johnda102@gmail.com" .  "~/RoamNotes/gcal.org")))
 
   (require 'org-gcal)
-  (setq org-gcal-auto-archive t)
+  (setq org-gcal-auto-archive nil)
+  ;;(setq org-gcal-recurring-events-mode 'top-level)  ; Better handling of recurring events
+
   (setq org-gcal-remove-api-cancelled-events t)
 
   ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
@@ -1229,6 +1345,8 @@ Org-mail captures
 #+end_src
 
 Main setup
+
+Testing [[https://github.com/armindarvish/consult-mu][consult-mu]]  Nice way to search email quickly
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
@@ -1313,24 +1431,49 @@ Main setup
     
 #+end_src
 
+#+begin_src emacs-lisp
 
-** Auto-tangle configuration files
+  (use-package consult-mu
+    :load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
+    :after (consult mu4e)
+    :custom
+    ;;maximum number of results shown in minibuffer
+    (consult-mu-maxnum 200)
+    ;;show preview when pressing any keys
+    (consult-mu-preview-key 'any)
+    ;;do not mark email as read when previewed
+    (consult-mu-mark-previewed-as-read nil)
+    ;; do not amrk email as read when selected. This is a good starting point to ensure you would
+    ;; not miss important emails marked as read by mistake especially when trying this package out.
+    ;;  Later you can change this to t.
+    (consult-mu-mark-viewed-as-read nil)
+    ;; open the message in mu4e-view-buffer when selected.
+    (consult-mu-action #'consult-mu--view-action)
 
-This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
-
-#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
-  
-  ;; Automatically tangle our Emacs.org config file when we save it
-  (defun efs/org-babel-tangle-config ()
-    (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/dotfiles/Emacs.org"))
-      ;; Dynamic scoping to the rescue
-      (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
-
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+    :config
+    ;;create a list of saved searches for quick access using `histroy-next-element'
+    ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+    (setq consult-mu-saved-searches-async '("#flag:unread"))
+    ;; require extra module for searching contacts and runing embark actions on contacts
+    (require 'consult-mu-contacts)
+    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+    (setq consult-mu-contacts-ignore-case-fold-search t)
+    )
 
 #+end_src
+
+* Helper Functions
+
+Zoom link
+
+#+begin_src emacs-lisp
+
+  (define-abbrev global-abbrev-table "myzoom" "https://cmu.zoom.us/j/4126571061")
+  (define-abbrev global-abbrev-table "yield" "yeild")
+
+#+end_src
+
 
 
 * Languages
@@ -1354,7 +1497,20 @@ Fly check
     :init
     (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
+
+;;    ;; Essential for TRAMP
+;;    (setq lsp-auto-guess-root t)
+;;    (setq lsp-enable-file-watchers nil)
+;;    (setq lsp-response-timeout 30)
+;;
+;;    ;; Enable TRAMP support
+;;    (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
+;;                      :major-modes '(python-mode)
+;;                      :remote? t
+;;                      :server-id 'pylsp-tramp))
+    )
 
 #+end_src
 
@@ -1362,16 +1518,24 @@ Fly check
 
 
 ** Python
-
+ 
 #+begin_src emacs-lisp
 
   (use-package python-mode
     :ensure nil
-    :hook (python-mode . lsp-deferred))
+    :hook (python-mode . lsp-deferred)
+    :bind (:map python-mode-map
+  	      :package python
+                ("<backtab>" . dabbrev-expand))
+    )
+
 
   (use-package pyvenv
     :config
     (pyvenv-mode 1))
+
+
+  (add-hook 'python-mode-hook (lambda () (company-mode -1)))
 
 
   (use-package lsp-mode
@@ -1379,6 +1543,8 @@ Fly check
     :commands (lsp lsp-deferred)
     :custom
     ;; Configure pylsp to use pylint
+    (lsp-completion-enable nil)
+
     (lsp-pylsp-plugins-pylint-enabled t)
     (lsp-pylsp-plugins-flake8-enabled nil)
 
@@ -1391,6 +1557,7 @@ Fly check
     (lsp-pylsp-plugins-pylint-args ["--max-line-length=88" "--disable=C0103"]))
 
 #+end_src
+
 
 ** Company
 
@@ -1415,15 +1582,51 @@ Fly check
       
 #+end_src
 
+
 * Emacs vs Emacs -nw config
 
 #+begin_src emacs-lisp
+      ;;:init (load-theme 'modus-operandi t)))
 
   (unless (eq window-system nil)
     (use-package doom-themes
-      :init (load-theme 'modus-operandi t)))
+      :init (load-theme 'modus-operandi-tritanopia t)))
 
   (unless (eq window-system nil)
     (load "~/dotfiles/init-org.el"))
     
+#+end_src
+
+
+* Auto-tangle configuration files
+
+This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+  
+  ;; Automatically tangle our Emacs.org config file when we save it
+  (defun efs/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+                        (expand-file-name "~/dotfiles/Emacs.org"))
+      ;; Dynamic scoping to the rescue
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+#+end_src
+
+
+* World Clock
+
+#+begin_src emacs-lisp
+
+  (setq world-clock-list
+        '(("America/New_York" "Pittsburgh")
+          ("Europe/Zurich" "CERN")
+          ("America/Chicago" "Chicago")
+  	("America/Los_Angeles" "Santa Barbara")
+          ("Asia/Shanghai" "China")))
+
+
 #+end_src

@@ -31,7 +31,7 @@
 (set-face-attribute 'default nil :height 150) ;; 15pt font
 
 ;; Set the variable pitch face
-;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+					;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
 (set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
 
 (setq make-backup-files nil) ;turn off the backup files
@@ -107,10 +107,10 @@
 (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key (kbd "C-?") 'help-command)
 (global-set-key "\M-h" 'backward-kill-word)
-;(global-set-key "\M-w" 'ispell-word)
+;;(global-set-key "\M-w" 'ispell-word)
 (global-set-key "\M-#" 'ispell-region)
 
-;(global-set-key "\C-l" 'goto-line)
+					;(global-set-key "\C-l" 'goto-line)
 (global-set-key "\M-n" 'forward-paragraph)
 (global-set-key "\M-p" 'backward-paragraph)
 
@@ -127,7 +127,7 @@
 (use-package counsel
   :bind (("M-X" . counsel-M-x)
          ("C-x B" . counsel-ibuffer)
-         ;("C-x F" . counsel-find-file)
+	 ;;("C-x F" . counsel-find-file)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history)))
 
@@ -151,6 +151,37 @@
 		      (other-buffer)
 		      (null current-prefix-arg)))))
 
+(setq display-buffer-alist
+      '(
+
+	;; Anatomy of a an entry:
+	;; (BUFFER-MATCHER
+	;;  LIST-OF-DISPLAY-ACTIONS
+	;;  &optional PARAMETERS)
+
+	("\\*Org todo\\*"
+	 ;; list of display functions
+	 (display-buffer-reuse-window
+	  display-buffer-below-selected)
+	 ;; Parameters
+	 (window-height . fit-window-to-buffer)
+	 (dedicated . t)
+	 )
+
+	("\\*wclock\\*"
+	 ;; list of display functions
+	 (display-buffer-reuse-window
+	  display-buffer-below-selected)
+	 ;; Parameters
+	 (window-height . fit-window-to-buffer)
+	 (dedicated . t)
+	 )
+
+	
+	))
+
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 (defun replace-blank-lines-with-true-blanks ()
   (interactive)
   (save-excursion
@@ -172,6 +203,13 @@
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
+(define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+(define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)  
+
+(define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
+(define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
+(define-key copilot-completion-map (kbd "C-g") 'copilot-clear-overlay)
+
 (setq warning-suppress-types '((copilot)))
 
 (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
@@ -278,6 +316,44 @@
          ;; opened file.
          ("M-s b" . consult-buffer)))
 
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ;("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+   ) 
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
 (use-package magit
   :ensure t)
 
@@ -321,9 +397,17 @@
 
 ;; Example of using the variable
 (defun open-lpc-coffea4bees ()
-  "Open the remote HH4b directory."
+  "Open the remote HH4b directory on the LPC."
   (interactive)
   (find-file remote-lpc-coffea4bees-path))
+
+(setq remote-falcon-coffea4bees-path "/ssh:jalison@falcon.phys.cmu.edu:/home/export/jalison/work/coffea4bees/python")
+
+;; Example of using the variable
+(defun open-falcon-coffea4bees ()
+  "Open the remote HH4b directory on falcon.phys.cmu.edu"
+  (interactive)
+  (find-file remote-falcon-coffea4bees-path))
 
 (defun efs/org-mode-visual-fill ()
   (setq visual-fill-column-width 150
@@ -339,24 +423,125 @@
         (funcall (plist-get (car result) :secret))
         nil)))
 
+(use-package consult-mu
+  :load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
+  :after (consult mu4e)
+  :custom
+  ;;maximum number of results shown in minibuffer
+  (consult-mu-maxnum 200)
+  ;;show preview when pressing any keys
+  (consult-mu-preview-key 'any)
+  ;;do not mark email as read when previewed
+  (consult-mu-mark-previewed-as-read nil)
+  ;; do not amrk email as read when selected. This is a good starting point to ensure you would
+  ;; not miss important emails marked as read by mistake especially when trying this package out.
+  ;;  Later you can change this to t.
+  (consult-mu-mark-viewed-as-read nil)
+  ;; open the message in mu4e-view-buffer when selected.
+  (consult-mu-action #'consult-mu--view-action)
+
+  :config
+  ;;create a list of saved searches for quick access using `histroy-next-element'
+  ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+  (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+  (setq consult-mu-saved-searches-async '("#flag:unread"))
+  ;; require extra module for searching contacts and runing embark actions on contacts
+  (require 'consult-mu-contacts)
+  (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+  (setq consult-mu-contacts-ignore-case-fold-search t)
+  )
+
+(define-abbrev global-abbrev-table "myzoom" "https://cmu.zoom.us/j/4126571061")
+(define-abbrev global-abbrev-table "yield" "yeild")
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
 
 (use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    :config
+    (lsp-enable-which-key-integration t)
+
+;;    ;; Essential for TRAMP
+;;    (setq lsp-auto-guess-root t)
+;;    (setq lsp-enable-file-watchers nil)
+;;    (setq lsp-response-timeout 30)
+;;
+;;    ;; Enable TRAMP support
+;;    (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
+;;                      :major-modes '(python-mode)
+;;                      :remote? t
+;;                      :server-id 'pylsp-tramp))
+    )
 
 (use-package python-mode
   :ensure nil
-  :hook (python-mode . lsp-deferred))
+  :hook (python-mode . lsp-deferred)
+  :bind (:map python-mode-map
+	      :package python
+              ("<backtab>" . dabbrev-expand))
+  )
+
+
+(use-package pyvenv
+  :config
+  (pyvenv-mode 1))
+
+
+(add-hook 'python-mode-hook (lambda () (company-mode -1)))
+
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :custom
+  ;; Configure pylsp to use pylint
+  (lsp-completion-enable nil)
+
+  (lsp-pylsp-plugins-pylint-enabled t)
+  (lsp-pylsp-plugins-flake8-enabled nil)
+
+  (lsp-pylsp-plugins-autopep8-enabled t) ;; Turn on for code style
+  (lsp-pylsp-plugins-black-enabled nil)
+  (lsp-pylsp-plugins-yapf-enabled nil)
+
+  (lsp-pylsp-plugins-pycodestyle-enabled nil)
+  (lsp-pylsp-plugins-pyflakes-enabled nil)
+  (lsp-pylsp-plugins-pylint-args ["--max-line-length=88" "--disable=C0103"]))
+
+;;;    (use-package company
+;;;      :after lsp-mode
+;;;      :hook (prog-mode . company-mode)
+;;;      :bind (:map company-active-map
+;;;  		("<tab>" . company-complete-selection)
+;;;  		("C-h" .   nil)
+;;;  		("C-?" .   company-show-doc-buffer)
+;;;  		)
+;;;            (:map lsp-mode-map
+;;;             ("<tab>" . company-indent-or-complete-common))
+;;;      :custom
+;;;      (company-minimum-prefix-length 1)
+;;;      (company-idle-delay 0.0))
+;;;
+;;;  ;;   (use-package company-box
+;;;  ;;    :hook (company-mode . company-box-mode))
+
+;;:init (load-theme 'modus-operandi t)))
 
 (unless (eq window-system nil)
   (use-package doom-themes
-    :init (load-theme 'modus-operandi t)))
+    :init (load-theme 'modus-operandi-tritanopia t)))
 
 (unless (eq window-system nil)
   (load "~/dotfiles/init-org.el"))
+
+(setq world-clock-list
+      '(("America/New_York" "Pittsburgh")
+        ("Europe/Zurich" "CERN")
+        ("America/Chicago" "Chicago")
+	("America/Los_Angeles" "Santa Barbara")
+        ("Asia/Shanghai" "China")))

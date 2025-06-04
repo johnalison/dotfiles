@@ -38,12 +38,12 @@
   :config
   (setq org-ellipsis " ▾")
   (setq org-agenda-files
-	'("~/RoamNotes/Tasks.org"
-	  "~/RoamNotes/Mail.org"
-	  "~/RoamNotes/Archive.org"
-	  "~/RoamNotes/Birthdays.org"
-	  "~/RoamNotes/gcal.org"
-	  ))
+  	'("~/RoamNotes/Tasks.org"
+  	  "~/RoamNotes/Mail.org"
+  	  "~/RoamNotes/Archive.org"
+  	  "~/RoamNotes/Birthdays.org"
+  	  "~/RoamNotes/gcal.org"
+  	  ))
   (setq org-hide-emphasis-markers t)
   (setq org-hide-block-startup t)
   (efs/org-font-setup)
@@ -55,96 +55,98 @@
 
 
   (setq org-todo-keywords
-	'((sequence "TODO(t)" "The ONE thing(o)" "Now(n)" "Someday Maybe(s)" "Waiting(w)" "|" "CANCEL(c!)" "DONE(d!)")
-	  ))
+  	'((sequence "TODO(t)" "The ONE thing(o)" "Now(n)" "Someday Maybe(s)" "Waiting(w)" "Planned(p)" "|" "CANCEL(c!)" "DONE(d!)")
+  	  ))
 
   (setq org-refile-targets
-	'(("Archive.org" :maxlevel . 1)
-	  ("Tasks.org" :maxlevel . 1)
-	  ))
+  	'(("Archive.org" :maxlevel . 1)
+  	  ("Tasks.org" :maxlevel . 1)
+  	  ))
 
   ;; Save Org buffers after refiling!
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
   ;;
   (setq org-tag-alist
-	'((:startgroup)
-					; Put mutually exclusive tags here
-	  (:endgroup)
-	  ;;("@errand" . ?E)
-	  ;;("@home" . ?H)
-	  ;;("@work" . ?W)
-	  ;;("meeting" . ?m)
-	  ;;("planning" . ?p)
-	  ("teaching" . ?t)
-	  ("emacs" . ?e)
-	  ("HGC" . ?H)
-	  ("4b" . ?4)
-	  ("bbWW" . ?W)
-	  ;;("publish" . ?P)
-	  ("idea" . ?i)
-	  ("question" . ?q)
-	  ))
+  	'((:startgroup)
+  					; Put mutually exclusive tags here
+  	  (:endgroup)
+  	  ;;("@errand" . ?E)
+  	  ;;("@home" . ?H)
+  	  ;;("@work" . ?W)
+  	  ;;("meeting" . ?m)
+  	  ;;("planning" . ?p)
+  	  ("teaching" . ?t)
+  	  ("emacs" . ?e)
+  	  ("HGC" . ?H)
+  	  ("4b" . ?4)
+  	  ("bbWW" . ?W)
+  	  ;;("publish" . ?P)
+  	  ("idea" . ?i)
+  	  ("question" . ?q)
+  	  ))
 
 
   ;; Configure custom agenda views
   (setq org-agenda-custom-commands
-	'(("d" "Dashboard"
-	   ((agenda "" ((org-deadline-warning-days 7)))
-	    (todo "The ONE thing"
-		  ((org-agenda-overriding-header "The ONE Thing")))
-	    (todo "Now"
-		  ((org-agenda-overriding-header "To do:")))
-	    (todo "Waiting"
-		  ((org-agenda-overriding-header "Waiting on")))
-	    (todo "TODO"
-		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
-	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
-	    ))
+  	'(("d" "Dashboard"
+  	   ((agenda "" ((org-deadline-warning-days 7)))
+  	    (todo "The ONE thing"
+  		  ((org-agenda-overriding-header "The ONE Thing")))
+  	    (todo "Now"
+  		  ((org-agenda-overriding-header "To do:")))
+  	    (todo "Waiting"
+  		  ((org-agenda-overriding-header "Waiting on")))
+  	    (todo "TODO"
+  		  ((org-agenda-overriding-header "On a Burner in the back of my mind")))  	    
+  	    ;;(tags-todo "agenda/Waiting" ((org-agenda-overriding-header "Waiting on")))
+  	    ))
 
-	  ("t" "To do"
-	   ((todo "TODO"
-		  ((org-agenda-overriding-header "Open Items")))))
+  	  ("t" "To do"
+  	   ((todo "TODO"
+  		  ((org-agenda-overriding-header "Open Items")))))
 
-	  ("n" "To do now"
-	   ((todo "Now"
-		  ((org-agenda-overriding-header "Now:")))))
+  	  ("n" "To do now"
+  	   ((todo "Now"
+  		  ((org-agenda-overriding-header "Now:")))))
 
 
-	  ("o" "The ONE Thing"
-	   ((todo "The ONE thing"
-		  ((org-agenda-overriding-header "The ONE Thing")))))
+  	  ("o" "The ONE Thing"
+  	   ((todo "The ONE thing"
+  		  ((org-agenda-overriding-header "The ONE Thing")))))
 
-	  ("s" "Someday Maybe"
-	   ((todo "Someday Maybe"
-		  ((org-agenda-overriding-header "Someday Maybe")))))
+  	  ("s" "Someday Maybe"
+  	   ((todo "Someday Maybe"
+  		  ((org-agenda-overriding-header "Someday Maybe")))))
 
-	  ;; The + [tag-name] means that the tag is required the - [tag-name] means that the tag is excluded
-	  ;;("W" "Work Tasks" tags-todo "+work-email")
+  	  ;; The + [tag-name] means that the tag is required the - [tag-name] means that the tag is excluded
+  	  ;;("W" "Work Tasks" tags-todo "+work-email")
 
-	  ))
+  	  ))
 
   (setq org-capture-templates
-	`(("a" "Appointment" entry (file "~/RoamNotes/gcal.org" )
-	   "* %?")
-	  ("t" "Tasks / Projects")
+  	`(("a" "Appointment" entry (file "~/RoamNotes/gcal.org" )
+  	   "* %?")
+  	  ("t" "Tasks / Projects")
 
-	  ;; %? is for the cursor /  %U is the time stamp  / %a is the link to the file / %i is the current region
-	  ;;("tt" "Task" entry (file+olp "~/RoamNotes/Tasks.org" "Inbox")
-	  ;; "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-	  ("tt" "Task" entry (file "~/RoamNotes/Tasks.org")
+  	  ;; %? is for the cursor /  %U is the time stamp  / %a is the link to the file / %i is the current region
+  	  ;;("tt" "Task" entry (file+olp "~/RoamNotes/Tasks.org" "Inbox")
+  	  ;; "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  	  ("tt" "Task" entry (file "~/RoamNotes/Tasks.org")
            "* TODO %?\n  %U\n " :empty-lines 1)
 
-	  ("m", "Email Workflow")
-	  ("mf", "Follow Up" entry (file+olp "~/RoamNotes/Mail.org" "Follow Up")
-	   "* TODO %a\n\n %i"
-	   :immediate-finish t)
+  	  ("m", "Email Workflow")
+  	  ("mf", "Follow Up" entry (file+olp "~/RoamNotes/Mail.org" "Follow Up")
+  	   "* TODO %a\n\n %i"
+  	   :immediate-finish t)
 
-	  ("mr", "Read Later" entry (file+olp "~/RoamNotes/Mail.org" "Read Later")
-	   "* TODO %a\n\n %i"
-	   :immediate-finish t))
-	)
+  	  ("mr", "Read Later" entry (file+olp "~/RoamNotes/Mail.org" "Read Later")
+  	   "* TODO %a\n\n %i"
+  	   :immediate-finish t))
+  	)
   )
+
+(add-hook 'org-mode-hook 'abbrev-mode)
 
 ;
 (with-eval-after-load 'org
@@ -351,7 +353,7 @@
 (require 'org-contacts)
 (setq org-contacts-files '("~/RoamNotes/Contacts.org"))
 
-(defun jda/org-contacts-groups ()
+(defun jda/org--contacts-groups ()
   "Return a list of all unique group names in org-contacts."
   (let ((groups '()))
     (org-map-entries
@@ -365,7 +367,7 @@
     groups))
 
 
-(defun jda/get-group-emails (group)
+(defun jda/get--group-emails (group)
   "Return a list of emails for contacts in GROUP."
   (let ((emails '()))
     (org-map-entries
@@ -384,8 +386,8 @@
   "Insert comma-separated list of emails for GROUP.
  With completion for available groups."
   (interactive
-   (list (completing-read "Group name: " (jda/org-contacts-groups))))
-  (let ((emails (jda/get-group-emails group)))
+   (list (completing-read "Group name: " (jda/org--contacts-groups))))
+  (let ((emails (jda/get--group-emails group)))
     (insert (mapconcat 'identity emails ", "))))
 
 (require 'org-download)
@@ -418,7 +420,9 @@
       org-gcal-fetch-file-alist '(("johnda102@gmail.com" .  "~/RoamNotes/gcal.org")))
 
 (require 'org-gcal)
-(setq org-gcal-auto-archive t)
+(setq org-gcal-auto-archive nil)
+;;(setq org-gcal-recurring-events-mode 'top-level)  ; Better handling of recurring events
+
 (setq org-gcal-remove-api-cancelled-events t)
 
 ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
