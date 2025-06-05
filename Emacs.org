@@ -56,8 +56,9 @@ Fonts
   (set-face-attribute 'default nil :height 150) ;; 15pt font
 
   ;; Set the variable pitch face
-  					;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
-  (set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+  ;;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+  ;(set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :height 175 :weight 'regular)
 
 #+end_src
 
@@ -86,6 +87,7 @@ Copy and paste
 #+end_src
 
 Copy the current region to the clipboard.  Bound to =C-c e=
+
 #+begin_src emacs-lisp
 
   (defun copy-region-to-pbcopy ()
@@ -105,7 +107,6 @@ Copy the current region to the clipboard.  Bound to =C-c e=
 
 
 * UI Configuration
-
 
 ** Scolling
 
@@ -173,7 +174,7 @@ Save hist
   ;;(global-set-key "\M-w" 'ispell-word)
   (global-set-key "\M-#" 'ispell-region)
 
-  					;(global-set-key "\C-l" 'goto-line)
+  ;;(global-set-key "\C-l" 'goto-line)
   (global-set-key "\M-n" 'forward-paragraph)
   (global-set-key "\M-p" 'backward-paragraph)
 
@@ -299,6 +300,7 @@ Ediff
 
 #+end_src
 
+
 * Text Editing 
 
 Whitespace
@@ -378,7 +380,7 @@ Automatically make git commit messages.
 
     ;; or, read from your shell’s env var:
     (setq gptel-api-key (getenv "OPENAI_API_KEY")))
-
+  
 
   (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
   (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
@@ -567,6 +569,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 
 #+end_src
 
+
 * Magit
 
  The `magit' package is a powerful interface to Git.
@@ -634,7 +637,7 @@ The `dired' package is the built-in file manager of Emacs.
 #+end_src
 
 
-* Tramps 
+* Tramps
 
 LPC
 
@@ -670,7 +673,6 @@ Falcon
 
 [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs. It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
 
-
 ** Better Fonts
 
 
@@ -687,14 +689,14 @@ The efs/org-font-setup function configures various text faces to tweak the sizes
 
     ;; Set faces for heading levels with colors
     ;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "#8350ef")
-    (set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
-    (set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
-    (set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    (set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    (set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    (set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    (set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    (set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
+    ;;;;;(set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+    ;;;;;(set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
     (set-face-attribute 'org-block nil :foreground nil :inherit '(shadow fixed-pitch) :height 1.0)
@@ -758,7 +760,7 @@ This section contains the basic configuration for org-mode plus the configuratio
     ;;
     (setq org-tag-alist
     	'((:startgroup)
-    					; Put mutually exclusive tags here
+    	  ;; Put mutually exclusive tags here
     	  (:endgroup)
     	  ;;("@errand" . ?E)
     	  ;;("@home" . ?H)

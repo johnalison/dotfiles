@@ -7,14 +7,14 @@
 
   ;; Set faces for heading levels with colors
   ;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "#8350ef")
-  (set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
-  (set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
-  (set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-  (set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-  (set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-  (set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-  (set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-  (set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
+  ;;;;;(set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+  ;;;;;(set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
   (set-face-attribute 'org-block nil :foreground nil :inherit '(shadow fixed-pitch) :height 1.0)
@@ -69,7 +69,7 @@
   ;;
   (setq org-tag-alist
   	'((:startgroup)
-  					; Put mutually exclusive tags here
+  	  ;; Put mutually exclusive tags here
   	  (:endgroup)
   	  ;;("@errand" . ?E)
   	  ;;("@home" . ?H)

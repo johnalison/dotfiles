@@ -31,8 +31,9 @@
 (set-face-attribute 'default nil :height 150) ;; 15pt font
 
 ;; Set the variable pitch face
-					;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
-(set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+;;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+;(set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :height 175 :weight 'regular)
 
 (setq make-backup-files nil) ;turn off the backup files
 
@@ -110,7 +111,7 @@
 ;;(global-set-key "\M-w" 'ispell-word)
 (global-set-key "\M-#" 'ispell-region)
 
-					;(global-set-key "\C-l" 'goto-line)
+;;(global-set-key "\C-l" 'goto-line)
 (global-set-key "\M-n" 'forward-paragraph)
 (global-set-key "\M-p" 'backward-paragraph)
 
