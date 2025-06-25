@@ -14,17 +14,23 @@ alias emcas='emacs'
 alias eamcs='emacs'
 alias emasc='emacs'
 
-
 alias cal='cal -3'
 
 # alias mduOn='sudo mdutil -a -i on'
 # alias mduOff='sudo mdutil -a -i off'
 
-alias nemacs='emacs '
-alias nemcas='emacs '
-alias neamcs='emacs '
-alias nemasc='emacs '
-alias neamsc='emacs '
+
+
+alias nemacs='/opt/homebrew/bin/emacs -nw'
+alias nemcas='/opt/homebrew/bin/emacs -nw'
+alias neamcs='/opt/homebrew/bin/emacs -nw'
+alias nemasc='/opt/homebrew/bin/emacs -nw'
+alias neamsc='/opt/homebrew/bin/emacs -nw'
+alias emacs="open -a /Applications/Emacs.app"
+alias emcas='emacs'
+alias eamcs='emacs'
+alias emasc='emacs'
+
 
 alias py='python3'
 alias df='df -h'
@@ -147,7 +153,7 @@ alias myzoom='echo https://cmu.zoom.us/j/4126571061 | pbcopy; echo "Copied zoom 
 
 
 
-alias scpEOS="python3 ~/scpEOS.py"
+alias scpEOS="python3 ~/lab/python/scpEOS.py"
 
 alias tarxzf="tar -xzf "
 
@@ -159,9 +165,14 @@ alias makePlot="source ~/AWK/plotting/makePlot.sh"
 alias vera="ssh alison@vera.psc.edu"
 
 alias calc="~/print_python.sh"
+alias lsDown="ls -lrt ~/Downloads | tail"
 
 alias falcon="ssh jalison@falcon.phys.cmu.edu"
+
 alias rogue01="ssh rogue01"
 alias rogue02="ssh rogue02"
+
+alias falcon10200="ssh -XY -L  10200:localhost:10200 jalison@falcon.phys.cmu.edu"
+
 
 #source ~/.aliases_local

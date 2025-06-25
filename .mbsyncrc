@@ -1,0 +1,29 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User johnda102@gmail.com
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty -d ~/.authinfo.gpg |grep imap.gmail.com |awk '{print $NF}'"
+TLSType IMAPS
+AuthMechs LOGIN
+Timeout 30
+PipelineDepth 100
+
+IMAPStore gmail-remote
+Account gmail
+
+
+MaildirStore gmail-local
+Subfolders Verbatim
+Path ~/Mail/gmail/
+Inbox ~/Mail/gmail/INBOX
+
+# With mbsync 1.4.0 and later: Use 'Far' instead of 'Master', and
+# 'Near' instead of 'Slave'.
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+#Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail" "[Gmail]/Trash"
+Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/Trash"
+#Patterns *
+Create Both
+SyncState *
+ExpireUnread yes
