@@ -1,9 +1,4 @@
 
-
-
-
-
-
 alias la='ls -A'
 alias lrt='ls -lrt'
 alias h='history'
@@ -14,6 +9,7 @@ alias cp='cp -i'
 alias diff='colordiff'
 
 #alias emacs='/usr/local/bin/emacs'
+alias emacs='emacs -nw'
 alias emcas='emacs'
 alias eamcs='emacs'
 alias emasc='emacs'
@@ -165,5 +161,7 @@ alias vera="ssh alison@vera.psc.edu"
 alias calc="~/print_python.sh"
 
 alias falcon="ssh jalison@falcon.phys.cmu.edu"
+alias rogue01="ssh rogue01"
+alias rogue02="ssh rogue02"
 
-source ~/.aliases_local
+#source ~/.aliases_local
