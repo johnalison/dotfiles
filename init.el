@@ -153,33 +153,63 @@
 		      (null current-prefix-arg)))))
 
 (setq display-buffer-alist
-      '(
+        '(
 
-	;; Anatomy of a an entry:
-	;; (BUFFER-MATCHER
-	;;  LIST-OF-DISPLAY-ACTIONS
-	;;  &optional PARAMETERS)
+  	;; Anatomy of a an entry:
+  	;; (BUFFER-MATCHER
+  	;;  LIST-OF-DISPLAY-ACTIONS
+  	;;  &optional PARAMETERS)
 
-	("\\*Org todo\\*"
-	 ;; list of display functions
-	 (display-buffer-reuse-window
-	  display-buffer-below-selected)
-	 ;; Parameters
-	 (window-height . fit-window-to-buffer)
-	 (dedicated . t)
-	 )
+  	("\\*Org todo\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-below-selected)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (dedicated . t)
+  	 )
 
-	("\\*wclock\\*"
-	 ;; list of display functions
-	 (display-buffer-reuse-window
-	  display-buffer-below-selected)
-	 ;; Parameters
-	 (window-height . fit-window-to-buffer)
-	 (dedicated . t)
-	 )
+  	("\\*Org Select\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-below-selected)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (dedicated . t)
+  	 )
 
-	
-	))
+  	
+  	("\\*wclock\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-below-selected)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (dedicated . t)
+  	 )
+
+  	("\\*Org Agenda\\*"
+  	 ;; list of display functions
+  	 (display-buffer-reuse-window
+  	  display-buffer-in-side-window)
+  	 ;; Parameters
+  	 (window-height . fit-window-to-buffer)
+  	 (window-width . fit-window-to-buffer)  	 
+  	 (side . right)
+  	 (dedicated . t)
+  	 )
+
+  	
+  	))
+
+
+(add-to-list 'display-buffer-alist
+             '("\\*org-roam\\*"
+               (display-buffer-reuse-window display-buffer-same-window)))
+
+(setq split-width-threshold 150)   ; Need 160+ columns for vertical split
+(setq split-height-threshold 200)   ; Need 80+ lines for horizontal split
+(setq split-window-preferred-function 'split-window-sensibly)
 
 (setq ediff-split-window-function 'split-window-horizontally)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -203,13 +233,14 @@
 (require 'editorconfig)
 (require 'copilot)
 (add-hook 'prog-mode-hook 'copilot-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
 (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
 (define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)  
 
-(define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
-(define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
+;;(define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
+;;(define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
 (define-key copilot-completion-map (kbd "C-g") 'copilot-clear-overlay)
 
 (setq warning-suppress-types '((copilot)))
@@ -547,3 +578,10 @@
         ("America/Chicago" "Chicago")
 	("America/Los_Angeles" "Santa Barbara")
         ("Asia/Shanghai" "China")))
+
+(setq org-export-with-title nil
+      org-export-with-author nil
+      org-export-with-date nil
+      org-export-with-toc nil
+      org-export-with-section-numbers nil
+      )

@@ -261,6 +261,7 @@
 (global-set-key (kbd "C-s-{") 'org-roam-dailies-find-previous-note)
 (global-set-key (kbd "C-s-}") 'org-roam-dailies-find-next-note)
 (global-set-key (kbd "s-t") (lambda () (interactive) (org-capture nil "tt")))
+(global-set-key (kbd "s-e") (lambda () (interactive) (org-capture nil "a")))  
 (global-set-key (kbd "s-q") 'org-roam-node-insert-immediate)
 (global-set-key (kbd "s-i") 'org-roam-node-insert)
 (global-set-key (kbd "C-c a") 'org-agenda)
