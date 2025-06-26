@@ -228,23 +228,6 @@
 
 (add-hook 'before-save-hook 'remove-trailing-whitespace)
 
-;; Setting up copilot
-(add-to-list 'load-path "~/emacs/copilot.el")
-(require 'editorconfig)
-(require 'copilot)
-(add-hook 'prog-mode-hook 'copilot-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
-(define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-(define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)  
-
-;;(define-key copilot-completion-map (kbd "M-p") 'copilot-previous-completion)
-;;(define-key copilot-completion-map (kbd "M-n") 'copilot-next-completion)
-(define-key copilot-completion-map (kbd "C-g") 'copilot-clear-overlay)
-
-(setq warning-suppress-types '((copilot)))
-
 (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
 (global-set-key (kbd "C-c c") 'copilot-chat-transient)
 
@@ -487,30 +470,6 @@
 (define-abbrev global-abbrev-table "myzoom" "https://cmu.zoom.us/j/4126571061")
 (define-abbrev global-abbrev-table "yield" "yeild")
 
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-
-(use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-    :config
-    (lsp-enable-which-key-integration t)
-
-;;    ;; Essential for TRAMP
-;;    (setq lsp-auto-guess-root t)
-;;    (setq lsp-enable-file-watchers nil)
-;;    (setq lsp-response-timeout 30)
-;;
-;;    ;; Enable TRAMP support
-;;    (lsp-register-client
-;;     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
-;;                      :major-modes '(python-mode)
-;;                      :remote? t
-;;                      :server-id 'pylsp-tramp))
-    )
-
 (use-package python-mode
   :ensure nil
   :hook (python-mode . lsp-deferred)
@@ -526,7 +485,7 @@
 
 
 (add-hook 'python-mode-hook (lambda () (company-mode -1)))
-
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 (use-package lsp-mode
   :ensure t
@@ -571,6 +530,11 @@
 
 (unless (eq window-system nil)
   (load "~/dotfiles/init-org.el"))
+
+(when (string= (system-name) "16inmachine.wifi.local.cmu.edu")
+  (load "~/dotfiles/init-lsp.el")
+  (load "~/dotfiles/init-copilot.el")
+  )
 
 (setq world-clock-list
       '(("America/New_York" "Pittsburgh")
