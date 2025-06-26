@@ -1,0 +1,228 @@
+#+title: Bash Alias Configuration
+#+PROPERTY: header-args:shell :tangle ~/dotfiles/.aliases
+  
+  
+* Common aliases
+ 
+
+#+begin_src shell
+
+    alias la='ls -A'
+    alias lrt='ls -lrt'
+    alias h='history'
+    alias ll='ls -l -h'
+    alias rm='rm -'i
+    alias mv='mv -i'
+    alias cp='cp -i'
+    alias diff='colordiff'
+    alias cal='cal -3'
+
+    alias py='python3'
+    alias df='df -h'
+    alias root='root -l'
+    alias lsDown="ls -lrt ~/Downloads | tail"
+    alias VLC="open -a /Applications/VLC.app "
+    alias scpEOS="python3 ~/lab/python/scpEOS.py"
+    alias myzoom='echo https://cmu.zoom.us/j/4126571061 | pbcopy; echo "Copied zoom link"'
+    alias grep='grep --color'
+    alias procs='ps aux|grep johnda'
+    alias lsrt='ls -lrt'
+    
+#+end_src
+
+
+
+* Emacs command
+
+** Local
+
+#+begin_src shell :tangle (if (string= (system-name) "16inmachine.wifi.local.cmu.edu") "~/dotfiles/.aliases" "no")
+
+  alias nemacs='/opt/homebrew/bin/emacs -nw'
+  alias nemcas='/opt/homebrew/bin/emacs -nw'
+  alias neamcs='/opt/homebrew/bin/emacs -nw'
+  alias nemasc='/opt/homebrew/bin/emacs -nw'
+  alias neamsc='/opt/homebrew/bin/emacs -nw'
+  alias emacs="open -a /Applications/Emacs.app"
+  alias emcas='emacs'
+  alias eamcs='emacs'
+  alias emasc='emacs'
+  
+#+end_src
+
+
+** Remote
+
+#+begin_src shell :tangle (if (not (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
+
+  alias nemacs='/usr/bin/emacs -nw'
+  alias nemcas='/usr/bin/emacs -nw'
+  alias neamcs='/usr/bin/emacs -nw'
+  alias nemasc='/usr/bin/emacs -nw'
+  alias neamsc='/usr/bin/emacs -nw'
+  #alias emacs="open -a /Applications/Emacs.app"
+  alias emcas='emacs'
+  alias eamcs='emacs'
+  alias emasc='emacs'
+  
+#+end_src
+
+
+
+* SSH 
+
+#+begin_src shell
+
+  alias ssh='ssh -X'
+    
+#+end_src
+
+** Servers
+
+CMU/CMS
+
+#+begin_src shell
+
+  alias lxplus='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus.cern.ch'
+  alias cmslpc='ssh -Y  jda102@cmslpc-el9.fnal.gov'
+  alias falcon="ssh jalison@falcon.phys.cmu.edu"
+  alias falcon10200="ssh -XY -L  10200:localhost:10200 jalison@falcon.phys.cmu.edu"
+  alias vera="ssh alison@vera.psc.edu"
+
+  alias cmslpc10200='ssh -XY -L  10200:localhost:10200 jda102@cmslpc-el9.fnal.gov'
+  alias cmslpc-el9='ssh -Y  jda102@cmslpc-el9.fnal.gov'
+  alias cmslpc6='ssh -Y  jda102@cmslpc-sl6.fnal.gov'
+  alias cmslpc7='ssh -Y  jda102@cmslpc-sl7.fnal.gov'
+  alias cmut3='ssh -Y johnda@cmsdata.phys.cmu.edu'
+
+  alias cleanroom="ssh pi@172.26.197.92"
+  alias cleanroom="echo pwd: cleanroom ; ssh pi@cleanroom.wifi.cmu.edu"
+  alias cleanroom2="echo pwd: cleanroom2 ; ssh pi@cleanroom2.wifi.cmu.edu"
+  alias cleanroom3="echo pwd: cleanroom3 ; ssh pi@cleanroom3.wifi.cmu.edu"
+
+  alias XSEDEcluster="ssh -l johnda login.xsede.org"
+  #alias PSCBridges="ssh alison@bridges.psc.edu"
+  alias PSCBridges2="ssh alison@bridges2.psc.edu"
+
+
+  #alias autoncluster="ssh jalison@bash.autonlab.org"
+  alias autoncluster="ssh lop2"
+  alias autonSetupPort="ssh -i ~/.ssh/id_rsa.pub  -fNL 1234:gpu10:22 -p 22 jalison@lake.auton.cs.cmu.edu"
+  alias autonGPU10="ssh  jalison@localhost -p 1234"
+
+
+  alias cmuData='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@cmsdata.phys.cmu.edu'
+  alias cmuCMS01='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@cms01.phys.cmu.edu'
+  alias cmuCMS02='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@cms02.phys.cmu.edu'
+  alias cmuCMS03='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@cms03.phys.cmu.edu'
+  alias cmuFPGA1='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@fpg1.math.cmu.edu'
+  alias cmuFPGA2='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@fpg2.math.cmu.edu'
+
+  
+#+end_src
+
+** Old Servers
+
+  # alias uct3='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes uct3-s1.uchicago.edu'
+  # alias uct3lx1='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes uct3-lx1.mwt2.org'
+  # alias uct3lx2='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes uct3-lx2.mwt2.org'
+  # alias pcpenn3='ssh -X pc-penn-d-03.cern.ch'
+  # alias alignmentCAF='ssh -X atlidali@lxplus.cern.ch'
+  # alias alignmentCAFNX='ssh atlidali@lxplus.cern.ch'
+  # alias pcpenn08='ssh -X pcpenn08.cern.ch'
+  # alias pennServer='ssh -X pc-penn-s-01.cern.ch'
+  # alias pennWorker1='ssh -X pc-penn-d-01.cern.ch'
+  # alias pennWorker2='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-02.cern.ch'
+  # alias pennWorker3='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-03.cern.ch'
+  # alias pennWorker4='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-04.cern.ch'
+  # alias pennWorker5='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-05.cern.ch'
+  # alias pennWorker6='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-06.cern.ch'
+  # alias pennWorker7='ssh -X -oGSSAPIDelegateCredentials=yes pc-penn-d-07.cern.ch'
+  # alias pennT3='ssh -X at3i00.hep.upenn.edu'
+  # alias DRL='ssh -X drl-dhcp094.sas.upenn.edu'
+  # alias ConsultHephaestus='ssh -X johnda@hephaestus.hep.upenn.edu'
+  # alias ConsultDionysus='ssh -X johnda@dionysus.hep.upenn.edu'
+  # alias ConsultZeus='ssh -X johnda@zeus.hep.upenn.edu'
+  # alias connect='ssh johnda@login.usatlas.org'
+
+    # alias uct3s3='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes uct3-s3.uchicago.edu'
+  # alias eshop1='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes eshop1.uchicago.edu'
+  # alias shop2='ssh root@shop2.uchicago.edu'
+
+  # alias dirac='ssh -X johnda@dirac.hep.upenn.edu'
+  # alias protonpack='ssh -X johnda@protonpack.hep.upenn.edu'
+  # alias higgs='ssh -X johnda@lxhiggs.hep.upenn.edu' #... hc=12
+  # alias higgs='/usr/local/bin/oldSSH -X johnda@lxhiggs.hep.upenn.edu'
+  # alias hepUC='ssh -X johnda@hep.uchicago.edu'
+  # alias hepUC='/usr/local/bin/oldSSH -X johnda@hep.uchicago.edu'
+  # alias heisenberg='ssh -X johnda@heisenberg.hep.upenn.edu'
+  # alias BNL='ssh -X atlasgw.bnl.gov'
+  # alias lxplus6='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus6.cern.ch'
+  # alias sbcLab4='ssh sbc-tbed-ftk-01.cern.ch'
+  # alias pc-tbed-ftk-fw='ssh pc-tbed-ftk-fw-01.cern.ch'
+
+
+
+* Old Stuff
+
+#+begin_src shell
+
+  alias sscp='scp -oGSSAPIDelegateCredentials=yes'
+  alias RunAndRun='python /afs/cern.ch/user/j/johnda/PyHelpers/RunAndRun2.0.py'
+  # Show the history number at the prompt, take it away 
+
+#+end_src
+
+#+begin_src shell
+  alias set_prompt_hist="PS1='\! \${PWD} > '"
+  alias set_prompt_norm="PS1='[\h] \${PWD} > '"
+#+end_src
+
+
+# export dion=dionysus.hep.upenn.edu
+# alias ooffice='ooffice -nologo'
+# alias Atlantis='java -jar /home/johnda/AtlasWork/Atlacntis/AtlantisJava-09-11-28/atlantis.jar'
+
+# alias romeName='echo yq2az87b'
+# alias romePwd='echo 7p2kgh7g'
+# alias egPWD='echo KT016461 sQmpLTtY'
+# alias IDPWD='echo wlpasswordogu'
+# alias stgenisPWD='echo uname: bph110 pwd: xSunE9WK'
+# alias iPlot='python -i ~/ROOTHelpers/iStack/iPlot.py'
+# alias iTree='python -i ~/ROOTHelpers/iStack/iTree.py'
+# alias gitloggraph='git log --pretty=format:"%h %s" --graph'
+# alias hcpwd='echo hc002x nkxovu'
+# 
+# alias pghPWD='echo CVU7CAHKD93CCY9T'
+# alias killLaCie='diskutil umount /Volumes/LaCie'
+# alias setupROOT='source ~/ROOT/root-6.14.04_build/bin/thisroot.sh'
+
+# alias setupROOT='source ~/ROOT/root_v6-26-02_build/bin/thisroot.sh'
+# alias setupPy3='cd ~/;source python-virtual-environments/env/bin/activate;cd -'
+# alias setupOT='cd ~/;source OT-metric-virtualenv/bin/activate;source OT-metric-virtualenv/root-6.16.00_builddir/bin/thisroot.sh ;cd -'
+
+# alias calc="~/print_python.sh"
+
+
+
+* Load secrets
+
+#+begin_src shell
+
+  alias getBW="gpg --quiet --for-your-eyes-only --no-tty -d ~/.authinfo.gpg |grep bitwarden | awk '{print \$NF}' "
+  alias kinitFNAL="getBW | bw get password cmslpc | kinit --password-file=/dev/stdin jda102@FNAL.GOV"
+  alias kinitCERN="getBW | bw get password login.cern.ch | kinit --password-file=/dev/stdin johnda@CERN.CH"
+  alias WhatAreWeLookingFor="getBW | pbcopy"
+
+  # alias getCERN='bw get password login.cern.ch | pbcopy  '
+  # alias getFNAL='bw get password cmslpc | pbcopy  '
+
+#+end_src
+
+
+#+begin_src shell
+  source ~/.aliases_local
+#+end_src
+
+
+
