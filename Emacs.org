@@ -368,14 +368,13 @@ Whitespace
 
 https://github.com/copilot-emacs/copilot.el
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-copilot.el
 
   ;; Setting up copilot
   (add-to-list 'load-path "~/emacs/copilot.el")
   (require 'editorconfig)
   (require 'copilot)
   (add-hook 'prog-mode-hook 'copilot-mode)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
@@ -1522,7 +1521,7 @@ Zoom link
 
 Fly check
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-lsp.el
 
   (use-package flycheck
     :ensure t
@@ -1532,7 +1531,7 @@ Fly check
 
 ** Language Servers
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-lsp.el
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
@@ -1578,7 +1577,7 @@ Fly check
 
 
   (add-hook 'python-mode-hook (lambda () (company-mode -1)))
-
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
   (use-package lsp-mode
     :ensure t
@@ -1637,6 +1636,17 @@ Fly check
   (unless (eq window-system nil)
     (load "~/dotfiles/init-org.el"))
     
+#+end_src
+
+* Load files when local
+
+#+begin_src emacs-lisp
+
+  (when (string= (system-name) "16inmachine.wifi.local.cmu.edu")
+    (load "~/dotfiles/init-lsp.el")
+    (load "~/dotfiles/init-copilot.el")
+    )
+   
 #+end_src
 
 
