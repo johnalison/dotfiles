@@ -1671,18 +1671,18 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 #+end_src
-
+ 
 
 * World Clock
 
 #+begin_src emacs-lisp
 
   (setq world-clock-list
-        '(("America/New_York" "Pittsburgh")
-          ("Europe/Zurich" "CERN")
-          ("America/Chicago" "Chicago")
-  	("America/Los_Angeles" "Santa Barbara")
-          ("Asia/Shanghai" "China")))
+	'(("America/New_York" "Pittsburgh")
+	  ("Europe/Zurich" "CERN")
+	  ("America/Chicago" "Chicago")
+	  ("America/Los_Angeles" "Santa Barbara")
+	  ("Asia/Shanghai" "China")))
 
 
 #+end_src

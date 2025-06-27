@@ -1,7 +1,7 @@
 #+title: Bash Alias Configuration
 #+PROPERTY: header-args:shell :tangle ~/dotfiles/.aliases
-  
-  
+   
+   
 * Common aliases
  
 
@@ -87,6 +87,9 @@ CMU/CMS
   alias cmslpc='ssh -Y  jda102@cmslpc-el9.fnal.gov'
   alias falcon="ssh jalison@falcon.phys.cmu.edu"
   alias falcon10200="ssh -XY -L  10200:localhost:10200 jalison@falcon.phys.cmu.edu"
+  alias rogue01="ssh rogue01"
+  alias rogue02="ssh rogue02"
+
   alias vera="ssh alison@vera.psc.edu"
 
   alias cmslpc10200='ssh -XY -L  10200:localhost:10200 jda102@cmslpc-el9.fnal.gov'
@@ -118,7 +121,7 @@ CMU/CMS
   alias cmuFPGA1='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@fpg1.math.cmu.edu'
   alias cmuFPGA2='ssh -Y -oGSSAPIDelegateCredentials=yes -oForwardX11=yes jalison@fpg2.math.cmu.edu'
 
-  
+
 #+end_src
 
 ** Old Servers
@@ -218,7 +221,7 @@ CMU/CMS
   # alias getFNAL='bw get password cmslpc | pbcopy  '
 
 #+end_src
-
+ 
 
 #+begin_src shell
   source ~/.aliases_local
