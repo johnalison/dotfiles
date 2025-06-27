@@ -36,8 +36,8 @@
 
 ** Local
 
-#+begin_src shell :tangle (if (string= (system-name) "16inmachine.wifi.local.cmu.edu") "~/dotfiles/.aliases" "no")
-
+#+begin_src shell :tangle (if (string= (system-name) "16inMachine.local") "~/dotfiles/.aliases" "no")
+ 
   alias nemacs='/opt/homebrew/bin/emacs -nw'
   alias nemcas='/opt/homebrew/bin/emacs -nw'
   alias neamcs='/opt/homebrew/bin/emacs -nw'
@@ -52,8 +52,8 @@
 
 
 ** Remote
-
-#+begin_src shell :tangle (if (not (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
+ 
+#+begin_src shell :tangle (if (not (string= (system-name) "16inMachine.local")) "~/dotfiles/.aliases" "no")
 
   alias nemacs='/usr/bin/emacs -nw'
   alias nemcas='/usr/bin/emacs -nw'
