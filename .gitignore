@@ -1,0 +1,6 @@
+/.aliases
+/init-copilot.el
+/init-lsp.el
+/init.el
+/init-org.el
+/.emacs.elc
