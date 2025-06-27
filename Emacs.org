@@ -1504,6 +1504,7 @@ Testing [[https://github.com/armindarvish/consult-mu][consult-mu]]  Nice way to 
 
 #+end_src
 
+
 * Helper Functions
 
 Zoom link
@@ -1638,6 +1639,7 @@ Fly check
     
 #+end_src
 
+
 * Load files when local
 
 #+begin_src emacs-lisp
@@ -1655,11 +1657,13 @@ Fly check
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
-  
+
   ;; Automatically tangle our Emacs.org config file when we save it
   (defun efs/org-babel-tangle-config ()
-    (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/dotfiles/Emacs.org"))
+    (when (or (string-equal (buffer-file-name)
+  			  (expand-file-name "~/dotfiles/Emacs.org"))
+  	    (string-equal (buffer-file-name)
+  			  (expand-file-name "~/dotfiles/aliases.org")))
       ;; Dynamic scoping to the rescue
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))
@@ -1683,6 +1687,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 #+end_src
 
+
 * Org-Mode Expoerts 
 
 #+begin_src emacs-lisp
@@ -1695,3 +1700,4 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
         )
     
 #+end_src
+
