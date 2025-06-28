@@ -34,6 +34,14 @@
 
 * Emacs command
 
+#+begin_src shell
+
+  ec() {
+      emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
+  } 
+
+#+end_src
+
 ** Local
 
 #+begin_src shell :tangle (if (string= (system-name) "16inMachine.local") "~/dotfiles/.aliases" "no")

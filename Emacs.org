@@ -52,13 +52,26 @@ Fonts
 
 #+begin_src emacs-lisp
 
-  ;; Set the fixed pitch face
-  (set-face-attribute 'default nil :height 150) ;; 15pt font
+  (defun efs/set-font-faces ()
+    (message "Setting faces!")
+    ;; Set the fixed pitch face
+    (set-face-attribute 'default nil :height 150) ;; 15pt font
 
-  ;; Set the variable pitch face
-  ;;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
-  ;(set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
-  (set-face-attribute 'variable-pitch nil :height 175 :weight 'regular)
+    ;; Set the variable pitch face
+    ;;(set-face-attribute 'variable-pitch nil :font "Inter" :height 175 :weight 'regular)
+    ;;(set-face-attribute 'variable-pitch nil :font "Lucida Grande" :height 175 :weight 'regular)
+    (set-face-attribute 'variable-pitch nil :height 175 :weight 'regular)
+    )
+
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame)
+                  ;; (setq doom-modeline-icon t)
+                  (with-selected-frame frame
+                    (efs/set-font-faces))))
+    (efs/set-font-faces))
+
+
 
 #+end_src
 
@@ -407,46 +420,64 @@ Automatically make git commit messages.
 #+begin_src emacs-lisp
 
 
-  ;; Setting up gptel
-  ;; (add-to-list 'load-path "~/emacs/gptel")
+    ;; Setting up gptel
+    ;; (add-to-list 'load-path "~/emacs/gptel")
 
-  (use-package gptel
-    :ensure t
-    :config
-    ;; either hard‑code it (not recommended for shared configs):
-    ;;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
-
-    ;; or, read from your shell’s env var:
-    (setq gptel-api-key (getenv "OPENAI_API_KEY")))
-  
-
-  (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
-  (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
-
-  (global-set-key (kbd "C-c g") 'gptel-send)
-  (global-set-key (kbd "C-c m") 'gptel-menu)
+    (use-package gptel
+      :ensure t
+      :config
+      ;; either hard‑code it (not recommended for shared configs):
+      ;;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
+      
+      ;; or, read from your shell’s env var:
+      (setq gptel-api-key (getenv "OPENAI_API_KEY"))
+      (setq gptel-model "claude-sonnet-4-20250514"
+    	gptel-backend (gptel-make-anthropic "Claude"
+    			:stream t
+    			:key (getenv "CLAUDE_API_KEY"))))
+      
 
 
-  (defun gptel-send-with-options (&optional arg)
-    "Send query.  With prefix ARG open gptel's menu instead."
-    (interactive "P")
-    (if arg
-        (call-interactively 'gptel-menu)
-      (gptel--suffix-send (transient-args 'gptel-menu))))
+    (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
+    (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
+
+    (global-set-key (kbd "C-c g") 'gptel-send)
+    (global-set-key (kbd "C-c m") 'gptel-menu)
 
 
-  ;; Optional defaults
-  (setq gptel-use-tools t                 ; allow tool use by default
-        gptel-confirm-tool-calls nil        ; ask before each invocation
-        gptel-include-tool-results nil)     ; echo results back to the model
+    (defun gptel-send-with-options (&optional arg)
+      "Send query.  With prefix ARG open gptel's menu instead."
+      (interactive "P")
+      (if arg
+          (call-interactively 'gptel-menu)
+        (gptel--suffix-send (transient-args 'gptel-menu))))
 
 
-  (gptel-make-preset 'proofreading
-    :description "Preset for proofreading tasks"
-    :system "Please copy edit this text. The replace will applied in place so only return the edited text."
-    :use-context 'system)
+    ;; Optional defaults
+    (setq gptel-use-tools t                 ; allow tool use by default
+          gptel-confirm-tool-calls nil        ; ask before each invocation
+          gptel-include-tool-results nil)     ; echo results back to the model
 
 
+    (gptel-make-preset 'proofreading
+      :description "Preset for proofreading tasks"
+      :system "Please copy edit this text. The replace will applied in place so only return the edited text."
+      :use-context 'system)
+
+
+  (gptel-make-anthropic "Claude-thinking" ;Any name you want
+    :key (getenv "CLAUDE_API_KEY")
+    :stream t
+    :models '(claude-3-7-sonnet-20250219)
+    :header (lambda () (when-let* ((key (gptel--get-api-key)))
+                    `(("x-api-key" . ,key)
+                      ("anthropic-version" . "2023-06-01")
+                      ("anthropic-beta" . "pdfs-2024-09-25")
+                      ("anthropic-beta" . "output-128k-2025-02-19")
+                      ("anthropic-beta" . "prompt-caching-2024-07-31"))))
+    :request-params '(:thinking (:type "enabled" :budget_tokens 2048)
+                      :max_tokens 4096))
+    
 
 #+end_src
 
@@ -719,22 +750,23 @@ The efs/org-font-setup function configures various text faces to tweak the sizes
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
   (defun efs/org-font-setup ()
+    (message "Setting org fonts!")
     ;; Replace list hyphen with dot
-    ;(font-lock-add-keywords 'org-mode
-    ;			  '(("^ *\\([-]\\) "
-    ;			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+    ;;(font-lock-add-keywords 'org-mode
+    ;;			  '(("^ *\\([-]\\) "
+    ;;			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 
     ;; Set faces for heading levels with colors
     ;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "#8350ef")
-    ;;;;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
-    ;;;;;(set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
-    ;;;;;(set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-1 nil :font "Lucida Grande" :weight 'bold    :height 1.1 :foreground "mediumblue")
+      ;;;;;(set-face-attribute 'org-level-2 nil :font "Lucida Grande" :weight 'bold    :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-3 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-4 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-5 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-6 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-7 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
+      ;;;;;(set-face-attribute 'org-level-8 nil :font "Lucida Grande" :weight 'regular :height 1.1 ) 
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
     (set-face-attribute 'org-block nil :foreground nil :inherit '(shadow fixed-pitch) :height 1.0)
@@ -758,6 +790,7 @@ This section contains the basic configuration for org-mode plus the configuratio
   (defun efs/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 1)
+    (efs/org-font-setup)
     ;;(setq-default line-spacing 0.5) ;; 0.2 means 20% extra space
     (visual-line-mode 1))
 
@@ -775,7 +808,6 @@ This section contains the basic configuration for org-mode plus the configuratio
     	  ))
     (setq org-hide-emphasis-markers t)
     (setq org-hide-block-startup t)
-    (efs/org-font-setup)
 
     (setq org-insert-heading-respect-content t)
     (setq org-agenda-start-with-log-mode t)
@@ -1628,15 +1660,31 @@ Fly check
 * Emacs vs Emacs -nw config
 
 #+begin_src emacs-lisp
-      ;;:init (load-theme 'modus-operandi t)))
+  ;;:init (load-theme 'modus-operandi t)))
 
-  (unless (eq window-system nil)
-    (use-package doom-themes
-      :init (load-theme 'modus-operandi-tritanopia t)))
-
-  (unless (eq window-system nil)
-    (load "~/dotfiles/init-org.el"))
+  ;;(unless (eq window-system nil)
     
+
+  (defun load-gui-config ()
+    "Load GUI-specific configuration."
+    (progn (load "~/dotfiles/init-org.el")
+  	 (use-package doom-themes
+  	   :init (load-theme 'modus-operandi-tritanopia t)))
+    )
+
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame)
+                  (with-selected-frame frame
+                    (when (display-graphic-p)
+                      (load-gui-config)))))
+    (when (display-graphic-p)
+      (load-gui-config)))
+
+
+  ;;(unless (eq window-system nil)
+  ;;  (load "~/dotfiles/init-org.el"))
+
 #+end_src
 
 
@@ -1656,7 +1704,7 @@ Fly check
 
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
 
-#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+#+begin_src emacs-lisp
 
   ;; Automatically tangle our Emacs.org config file when we save it
   (defun efs/org-babel-tangle-config ()
