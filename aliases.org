@@ -50,7 +50,7 @@ Open an emacs frame
 
   ec() {
       emacsclient  -n "$@" && osascript -e 'tell application "Emacs" to activate'
-      # emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
+      #emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
   } 
 
 #+end_src
