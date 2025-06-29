@@ -413,14 +413,14 @@ https://github.com/copilot-emacs/copilot.el
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-copilot.el
 
   ;; Setting up copilot
-  ;;(add-to-list 'load-path "~/emacs/copilot.el")
+  					;
+  					; (require 'editorconfig)
 
-  ;
-  ; (require 'editorconfig)
-
+  ;;(straight-use-package 'copilot)
   (use-package copilot
     :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
     :ensure t)
+
 
   (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
@@ -439,9 +439,13 @@ https://github.com/copilot-emacs/copilot.el
 
 Chat: https://github.com/chep/copilot-chat.el
  
-Automatically make git commit messages.
+Automatically make git commit messages. 
 
 #+begin_src emacs-lisp
+
+  (use-package copilot-chat
+    :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+    :after (request org markdown-mode))
 
   (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
   (global-set-key (kbd "C-c c") 'copilot-chat-transient)
@@ -453,10 +457,6 @@ Automatically make git commit messages.
 
 
 #+begin_src emacs-lisp
-
-
-    ;; Setting up gptel
-    ;; (add-to-list 'load-path "~/emacs/gptel")
 
     (use-package gptel
       :straight t
@@ -1559,34 +1559,34 @@ Testing [[https://github.com/armindarvish/consult-mu][consult-mu]]  Nice way to 
 
 #+begin_src emacs-lisp
 
-  ;;(use-package consult-mu
-  ;;  :straight t
-  ;;  ;;:load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
-  ;;  :after (consult mu4e)
-  ;;  :custom
-  ;;  ;;maximum number of results shown in minibuffer
-  ;;  (consult-mu-maxnum 200)
-  ;;  ;;show preview when pressing any keys
-  ;;  (consult-mu-preview-key 'any)
-  ;;  ;;do not mark email as read when previewed
-  ;;  (consult-mu-mark-previewed-as-read nil)
-  ;;  ;; do not amrk email as read when selected. This is a good starting point to ensure you would
-  ;;  ;; not miss important emails marked as read by mistake especially when trying this package out.
-  ;;  ;;  Later you can change this to t.
-  ;;  (consult-mu-mark-viewed-as-read nil)
-  ;;  ;; open the message in mu4e-view-buffer when selected.
-  ;;  (consult-mu-action #'consult-mu--view-action)
-  ;;
-  ;;  :config
-  ;;  ;;create a list of saved searches for quick access using `histroy-next-element'
-  ;;  ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
-  ;;  (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
-  ;;  (setq consult-mu-saved-searches-async '("#flag:unread"))
-  ;;  ;; require extra module for searching contacts and runing embark actions on contacts
-  ;;  (require 'consult-mu-contacts)
-  ;;  (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
-  ;;  (setq consult-mu-contacts-ignore-case-fold-search t)
-  ;;  )
+  (use-package consult-mu
+    :straight (consult-mu :type git :host github :repo "armindarvish/consult-mu" :files (:defaults "extras/*.el"))
+    ;;:load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
+    :after (mu4e consult)
+    :custom
+    ;;maximum number of results shown in minibuffer
+    (consult-mu-maxnum 200)
+    ;;show preview when pressing any keys
+    (consult-mu-preview-key 'any)
+    ;;do not mark email as read when previewed
+    (consult-mu-mark-previewed-as-read nil)
+    ;; do not amrk email as read when selected. This is a good starting point to ensure you would
+    ;; not miss important emails marked as read by mistake especially when trying this package out.
+    ;;  Later you can change this to t.
+    (consult-mu-mark-viewed-as-read nil)
+    ;; open the message in mu4e-view-buffer when selected.
+    (consult-mu-action #'consult-mu--view-action)
+
+    :config
+    ;;create a list of saved searches for quick access using `histroy-next-element'
+    ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+    (setq consult-mu-saved-searches-async '("#flag:unread"))
+    ;; require extra module for searching contacts and runing embark actions on contacts
+    (require 'consult-mu-contacts)
+    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+    (setq consult-mu-contacts-ignore-case-fold-search t)
+    )
 
 #+end_src
 
@@ -1749,7 +1749,7 @@ Fly check
 
 #+begin_src emacs-lisp
 
-  (when (string= (system-name) "16inmachine.wifi.local.cmu.edu")
+  (when (string= (system-name) "16inMachine.local")
     (load "~/dotfiles/init-lsp.el")
     (load "~/dotfiles/init-copilot.el")
     )
