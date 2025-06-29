@@ -34,6 +34,18 @@
 
 * Emacs command
 
+Start and kill the daemon
+
+#+begin_src shell
+
+  alias emacs_start='/opt/homebrew/bin/emacs --daemon'
+  alias emacs_kill='emacsclient -e "(kill-emacs)"'
+    
+#+end_src
+
+Open an emacs frame
+ The =-c=  creates a frame, the =-n= means dont wait until the frame is closed to return control to the terminal
+
 #+begin_src shell
 
   ec() {
