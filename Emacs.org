@@ -4,26 +4,51 @@
 
 * Package System Setup
 
+** Straight.el
+
+see straight.el [[https://github.com/radian-software/straight.el#readme][README]]
+
 #+begin_src emacs-lisp
 
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+          'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 
-  ;; MELPA
-  (require 'package)
-
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("org" . "https://orgmode.org/elpa/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")))
-
-
-  (package-initialize)
-  ;;(unless package-archive-contents
-  ;;  (package-refresh-contents))
-
-  ;;(require 'use-package)
-  ;;'(setq use-package-always-ensure t)
-
+  (straight-use-package 'use-package)
 
 #+end_src
+
+
+#+begin_src emacs-lisp
+
+;;
+;;  ;; MELPA
+;;  (require 'package)
+;;
+;;  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+;;                           ("org" . "https://orgmode.org/elpa/")
+;;                           ("elpa" . "https://elpa.gnu.org/packages/")))
+;;
+;;
+;;  (package-initialize)
+;;  ;;(unless package-archive-contents
+;;  ;;  (package-refresh-contents))
+;;
+;;  ;;(require 'use-package)
+;;  ;;'(setq use-package-always-ensure t)
+;;
+
+#+end_src
+
 
 
 * Basic UI Configuration
@@ -171,6 +196,7 @@ Save hist
 #+begin_src emacs-lisp
 
   (use-package savehist
+    :straight t
     :init
     (savehist-mode))
 
@@ -424,7 +450,7 @@ Automatically make git commit messages.
     ;; (add-to-list 'load-path "~/emacs/gptel")
 
     (use-package gptel
-      :ensure t
+      :straight t
       :config
       ;; either hard‑code it (not recommended for shared configs):
       ;;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
@@ -519,7 +545,7 @@ The [[https://github.com/minad/vertico][Vertigo]] package applies a vertical lay
 #+begin_src emacs-lisp
 
   (use-package vertico
-    :ensure t
+    :straight t
     :custom
     (vertico-cycle t)
     :init
@@ -543,7 +569,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8
 
   (use-package marginalia
     :after vertico
-    :ensure t
+    :straight t
     :custom
     (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
     :init
@@ -561,7 +587,7 @@ Note that Emacs has lots of "completion styles" (pattern matching algorithms), b
 #+begin_src emacs-lisp
 
   (use-package orderless
-    :ensure t
+    :straight t
     :config
     (setq completion-styles '(orderless basic)))
     
@@ -576,7 +602,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 #+begin_src emacs-lisp
 
   (use-package consult
-    :ensure t
+    :straight t
     :bind (;; A recursive grep
            ("M-s g" . consult-grep)
            ;; Search for files names recursively
@@ -598,7 +624,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 #+begin_src emacs-lisp
 
     (use-package embark
-      :ensure t
+      :straight t
 
       :bind
       (("C-." . embark-act)         ;; pick some comfortable binding
@@ -631,7 +657,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 
     ;; Consult users will also want the embark-consult package.
     (use-package embark-consult
-      :ensure t ; only need to install it, embark loads it after consult if found
+      :straight t ; only need to install it, embark loads it after consult if found
       :hook
       (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -646,7 +672,7 @@ The [[https://protesilaos.com/emacs/dotemacs#h:22e97b4c-d88d-4deb-9ab3-f80631f9f
 #+begin_src emacs-lisp
 
   (use-package magit
-    :ensure t)
+    :straight t)
 
 #+end_src
 
@@ -659,7 +685,7 @@ The `dired' package is the built-in file manager of Emacs.
 
 
   (use-package dired
-    :ensure nil              ;; dired is built-in
+    :straight nil              ;; dired is built-in
     :bind (:map dired-mode-map
                 ("b" . dired-up-directory))
     :custom ((insert-directory-program "gls")
@@ -675,6 +701,7 @@ The `dired' package is the built-in file manager of Emacs.
     (require 'dired-x))
 
   (use-package dired-open
+    :straight t
     :config
     ;; Doesn't work as expected!
     (add-to-list 'dired-open-functions #'dired-open-xdg t)
@@ -701,6 +728,7 @@ The `dired' package is the built-in file manager of Emacs.
 #+begin_src emacs-lisp
 
   (use-package rainbow-delimiters
+    :straight t
     :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
@@ -936,13 +964,14 @@ This section contains the basic configuration for org-mode plus the configuratio
 #+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
 
   (use-package org-bullets
+    :straight t
     :after org
     :hook (org-mode . org-bullets-mode)
     :custom
     (org-bullets-bullet-list '("○" "-" "" "" "" "" "")))
 
     ;; Other options: "◉" "○" "●" "○" "●" "○" "●"
-  
+
 #+end_src
 
 
@@ -958,6 +987,7 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
     (visual-fill-column-mode 1))
 
   (use-package visual-fill-column
+    :straight t
     :hook (org-mode . efs/org-mode-visual-fill))
 
 #+end_src
@@ -1021,7 +1051,7 @@ Default show onnly one day
 
 
   (use-package org-roam
-    :ensure t
+    :straight t
     :custom
     (org-roam-directory "~/RoamNotes")
     (org-roam-dailies-directory   "Journal/")
@@ -1156,7 +1186,7 @@ Show *Org Agenda* in a right‑side window (≈ 50 % of the frame)
 #+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
 
   (use-package consult-org-roam
-     :ensure t
+     :straight t
      :after org-roam
      :init
      (require 'consult-org-roam)
@@ -1261,8 +1291,12 @@ Org-contacts configuration
 
 #+begin_src emacs-lisp   :tangle ~/dotfiles/init-org.el
 
-    (require 'org-contacts)
-    (setq org-contacts-files '("~/RoamNotes/Contacts.org"))
+  (use-package org-contacts
+    :straight t
+    :config
+    (setq org-contacts-files '("~/RoamNotes/Contacts.org")))
+
+  ;;(setq org-contacts-files '("~/RoamNotes/Contacts.org"))
 
 #+end_src
 
@@ -1317,7 +1351,9 @@ https://github.com/abo-abo/org-download
 
 #+begin_src emacs-lisp  :tangle ~/dotfiles/init-org.el
 
-  (require 'org-download)
+  (use-package org-download
+    :straight t
+    )
 
   (add-hook 'dired-mode-hook 'org-download-enable)
 
@@ -1373,9 +1409,15 @@ Need to fix client secret with gnp
         org-gcal-client-secret (efs/lookup-password :host "org-gal-client")
         org-gcal-fetch-file-alist '(("johnda102@gmail.com" .  "~/RoamNotes/gcal.org")))
 
-  (require 'org-gcal)
-  (setq org-gcal-auto-archive nil)
+  
+  (use-package org-gcal
+    :straight t
+    :init
+    )
+
+
   ;;(setq org-gcal-recurring-events-mode 'top-level)  ; Better handling of recurring events
+  (setq org-gcal-auto-archive nil)
 
   (setq org-gcal-remove-api-cancelled-events t)
 
@@ -1424,7 +1466,7 @@ Testing [[https://github.com/armindarvish/consult-mu][consult-mu]]  Nice way to 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
   (use-package mu4e
-    :ensure nil
+    :straight nil
     ;:load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
     :defer 20 ; Wait until 20 seconds after startup
     :bind(:map mu4e-search-minor-mode-map
@@ -1557,7 +1599,7 @@ Fly check
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-lsp.el
 
   (use-package flycheck
-    :ensure t
+    :straight t
     :init (global-flycheck-mode))
     
 #+end_src
@@ -1596,7 +1638,7 @@ Fly check
 #+begin_src emacs-lisp
 
   (use-package python-mode
-    :ensure nil
+    :straight nil
     :hook (python-mode . lsp-deferred)
     :bind (:map python-mode-map
   	      :package python
@@ -1605,6 +1647,7 @@ Fly check
 
 
   (use-package pyvenv
+    :straight t
     :config
     (pyvenv-mode 1))
 
@@ -1613,7 +1656,7 @@ Fly check
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
   (use-package lsp-mode
-    :ensure t
+    :straight t
     :commands (lsp lsp-deferred)
     :custom
     ;; Configure pylsp to use pylint
@@ -1669,6 +1712,7 @@ Fly check
     (progn (load "~/dotfiles/init-org.el")
   	 (message "Loading theme")
   	 (use-package doom-themes
+  	   :straight t
   	   :init (load-theme 'modus-operandi-tritanopia t)))
     )
 
