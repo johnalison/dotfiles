@@ -1663,11 +1663,11 @@ Fly check
   ;;:init (load-theme 'modus-operandi t)))
 
   ;;(unless (eq window-system nil)
-    
-
+     
   (defun load-gui-config ()
     "Load GUI-specific configuration."
     (progn (load "~/dotfiles/init-org.el")
+  	 (message "Loading theme")
   	 (use-package doom-themes
   	   :init (load-theme 'modus-operandi-tritanopia t)))
     )
