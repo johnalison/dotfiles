@@ -231,6 +231,7 @@ Save hist
 #+begin_src emacs-lisp
 
   (use-package which-key
+    :straight t
     :init (which-key-mode)
     :diminish which-key-mode
     :config
@@ -246,13 +247,14 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
 #+begin_src emacs-lisp
 
   (use-package counsel
+    :straight t
     :bind (("M-X" . counsel-M-x)
            ("C-x B" . counsel-ibuffer)
   	 ;;("C-x F" . counsel-find-file)
            :map minibuffer-local-map
            ("C-r" . 'counsel-minibuffer-history)))
 
-  
+
 #+end_src
 
 
@@ -263,6 +265,7 @@ Counsel is a customized set of commands to replace `find-file` with `counsel-fin
 #+begin_src emacs-lisp
 
   (use-package helpful
+    :straight t
     :custom
     (counsel-describe-function-function #'helpful-callable)
     (counsel-describe-variable-function #'helpful-variable)
@@ -410,9 +413,15 @@ https://github.com/copilot-emacs/copilot.el
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-copilot.el
 
   ;; Setting up copilot
-  (add-to-list 'load-path "~/emacs/copilot.el")
-  (require 'editorconfig)
-  (require 'copilot)
+  ;;(add-to-list 'load-path "~/emacs/copilot.el")
+
+  ;
+  ; (require 'editorconfig)
+
+  (use-package copilot
+    :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+    :ensure t)
+
   (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-c C-f") 'copilot-accept-completion-by-word)
@@ -713,6 +722,7 @@ The `dired' package is the built-in file manager of Emacs.
 
 
   (use-package dired-hide-dotfiles
+    :straight t
     :hook (dired-mode . dired-hide-dotfiles-mode)
     :bind(:map dired-mode-map
   	("H" . dired-hide-dotfiles-mode)
@@ -824,6 +834,7 @@ This section contains the basic configuration for org-mode plus the configuratio
 
 
   (use-package org
+    :straight t
     :hook (org-mode . efs/org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
@@ -1548,33 +1559,34 @@ Testing [[https://github.com/armindarvish/consult-mu][consult-mu]]  Nice way to 
 
 #+begin_src emacs-lisp
 
-  (use-package consult-mu
-    :load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
-    :after (consult mu4e)
-    :custom
-    ;;maximum number of results shown in minibuffer
-    (consult-mu-maxnum 200)
-    ;;show preview when pressing any keys
-    (consult-mu-preview-key 'any)
-    ;;do not mark email as read when previewed
-    (consult-mu-mark-previewed-as-read nil)
-    ;; do not amrk email as read when selected. This is a good starting point to ensure you would
-    ;; not miss important emails marked as read by mistake especially when trying this package out.
-    ;;  Later you can change this to t.
-    (consult-mu-mark-viewed-as-read nil)
-    ;; open the message in mu4e-view-buffer when selected.
-    (consult-mu-action #'consult-mu--view-action)
-
-    :config
-    ;;create a list of saved searches for quick access using `histroy-next-element'
-    ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
-    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
-    (setq consult-mu-saved-searches-async '("#flag:unread"))
-    ;; require extra module for searching contacts and runing embark actions on contacts
-    (require 'consult-mu-contacts)
-    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
-    (setq consult-mu-contacts-ignore-case-fold-search t)
-    )
+  ;;(use-package consult-mu
+  ;;  :straight t
+  ;;  ;;:load-path ("~/emacs/consult-mu" "~/emacs/consult-mu/extras")
+  ;;  :after (consult mu4e)
+  ;;  :custom
+  ;;  ;;maximum number of results shown in minibuffer
+  ;;  (consult-mu-maxnum 200)
+  ;;  ;;show preview when pressing any keys
+  ;;  (consult-mu-preview-key 'any)
+  ;;  ;;do not mark email as read when previewed
+  ;;  (consult-mu-mark-previewed-as-read nil)
+  ;;  ;; do not amrk email as read when selected. This is a good starting point to ensure you would
+  ;;  ;; not miss important emails marked as read by mistake especially when trying this package out.
+  ;;  ;;  Later you can change this to t.
+  ;;  (consult-mu-mark-viewed-as-read nil)
+  ;;  ;; open the message in mu4e-view-buffer when selected.
+  ;;  (consult-mu-action #'consult-mu--view-action)
+  ;;
+  ;;  :config
+  ;;  ;;create a list of saved searches for quick access using `histroy-next-element'
+  ;;  ;; with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+  ;;  (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+  ;;  (setq consult-mu-saved-searches-async '("#flag:unread"))
+  ;;  ;; require extra module for searching contacts and runing embark actions on contacts
+  ;;  (require 'consult-mu-contacts)
+  ;;  (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+  ;;  (setq consult-mu-contacts-ignore-case-fold-search t)
+  ;;  )
 
 #+end_src
 
@@ -1608,25 +1620,26 @@ Fly check
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-lsp.el
 
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-    :config
-    (lsp-enable-which-key-integration t)
+    (use-package lsp-mode
+      :straight t
+      :commands (lsp lsp-deferred)
+      :init
+      (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+      :config
+      (lsp-enable-which-key-integration t)
 
-;;    ;; Essential for TRAMP
-;;    (setq lsp-auto-guess-root t)
-;;    (setq lsp-enable-file-watchers nil)
-;;    (setq lsp-response-timeout 30)
-;;
-;;    ;; Enable TRAMP support
-;;    (lsp-register-client
-;;     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
-;;                      :major-modes '(python-mode)
-;;                      :remote? t
-;;                      :server-id 'pylsp-tramp))
-    )
+  ;;    ;; Essential for TRAMP
+  ;;    (setq lsp-auto-guess-root t)
+  ;;    (setq lsp-enable-file-watchers nil)
+  ;;    (setq lsp-response-timeout 30)
+  ;;
+  ;;    ;; Enable TRAMP support
+  ;;    (lsp-register-client
+  ;;     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
+  ;;                      :major-modes '(python-mode)
+  ;;                      :remote? t
+  ;;                      :server-id 'pylsp-tramp))
+      )
 
 #+end_src
 
