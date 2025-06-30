@@ -28,29 +28,6 @@ see straight.el [[https://github.com/radian-software/straight.el#readme][README]
 #+end_src
 
 
-#+begin_src emacs-lisp
-
-;;
-;;  ;; MELPA
-;;  (require 'package)
-;;
-;;  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-;;                           ("org" . "https://orgmode.org/elpa/")
-;;                           ("elpa" . "https://elpa.gnu.org/packages/")))
-;;
-;;
-;;  (package-initialize)
-;;  ;;(unless package-archive-contents
-;;  ;;  (package-refresh-contents))
-;;
-;;  ;;(require 'use-package)
-;;  ;;'(setq use-package-always-ensure t)
-;;
-
-#+end_src
-
-
-
 * Basic UI Configuration
 
 Simplify the UI
@@ -412,11 +389,6 @@ https://github.com/copilot-emacs/copilot.el
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-copilot.el
 
-  ;; Setting up copilot
-  					;
-  					; (require 'editorconfig)
-
-  ;;(straight-use-package 'copilot)
   (use-package copilot
     :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
     :ensure t)
@@ -458,7 +430,7 @@ Automatically make git commit messages.
 
 #+begin_src emacs-lisp
 
-    (use-package gptel
+  (use-package gptel
       :straight t
       :config
       ;; either hard‑code it (not recommended for shared configs):
