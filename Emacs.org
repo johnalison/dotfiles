@@ -1721,9 +1721,10 @@ Fly check
 
 #+begin_src emacs-lisp
 
+
   (when (string= (system-name) "16inMachine.local")
+    (load "~/dotfiles/init-copilot.el")  
     (load "~/dotfiles/init-lsp.el")
-    (load "~/dotfiles/init-copilot.el")
     )
    
 #+end_src
