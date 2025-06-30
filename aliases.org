@@ -34,10 +34,31 @@
 
 * Emacs command
 
+Start and kill the daemon
+
+#+begin_src shell
+
+  alias emacs_start='/opt/homebrew/bin/emacs --daemon'
+  alias emacs_kill='emacsclient -e "(kill-emacs)"'
+    
+#+end_src
+
+Open an emacs frame
+ The =-c=  creates a frame, the =-n= means dont wait until the frame is closed to return control to the terminal
+
+#+begin_src shell
+
+  ec() {
+      emacsclient  -n "$@" && osascript -e 'tell application "Emacs" to activate'
+      #emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
+  } 
+
+#+end_src
+
 ** Local
 
-#+begin_src shell :tangle (if (string= (system-name) "16inmachine.wifi.local.cmu.edu") "~/dotfiles/.aliases" "no")
-
+#+begin_src shell :tangle (if (string= (system-name) "16inMachine.local") "~/dotfiles/.aliases" "no")
+ 
   alias nemacs='/opt/homebrew/bin/emacs -nw'
   alias nemcas='/opt/homebrew/bin/emacs -nw'
   alias neamcs='/opt/homebrew/bin/emacs -nw'
@@ -52,8 +73,8 @@
 
 
 ** Remote
-
-#+begin_src shell :tangle (if (not (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
+ 
+#+begin_src shell :tangle (if (not (string= (system-name) "16inMachine.local")) "~/dotfiles/.aliases" "no")
 
   alias nemacs='/usr/bin/emacs -nw'
   alias nemcas='/usr/bin/emacs -nw'
