@@ -49,8 +49,8 @@ Open an emacs frame
 #+begin_src shell
 
   ec() {
-      emacsclient  -n "$@" && osascript -e 'tell application "Emacs" to activate'
-      #emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
+      #emacsclient  -n "$@" && osascript -e 'tell application "Emacs" to activate'
+      emacsclient -c -n "$@" && osascript -e 'tell application "Emacs" to activate'
   } 
 
 #+end_src
