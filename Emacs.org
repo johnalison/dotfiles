@@ -551,8 +551,8 @@ The [[https://protesilaos.com/emacs/dotemacs#h:bd3f7a1d-a53d-4d3e-860e-25c5b35d8
   (use-package marginalia
     :after vertico
     :straight t
-    :custom
-    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+    ;;:custom
+    ;;(marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
     :init
     (marginalia-mode))
 
@@ -1338,6 +1338,9 @@ https://github.com/abo-abo/org-download
     :straight t
     )
 
+  (setq org-download-image-dir "~/RoamNotes/images/")
+
+
   (add-hook 'dired-mode-hook 'org-download-enable)
 
 #+end_src
@@ -1637,7 +1640,7 @@ Fly check
     (pyvenv-mode 1))
 
 
-  (add-hook 'python-mode-hook (lambda () (company-mode -1)))
+  ;;(add-hook 'python-mode-hook (lambda () (company-mode -1)))
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
   (use-package lsp-mode
