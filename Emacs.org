@@ -408,6 +408,13 @@ https://github.com/copilot-emacs/copilot.el
 
 #+end_src
 
+#+begin_src emacs-lisp :tangle (if (not (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu"))) "~/dotfiles/init-copilot.el" "no") 
+
+  (setq copilot-node-executable "node")
+  (setq copilot-bin "~/node_modules/.bin/copilot-language-server")
+   
+#+end_src
+
 
 Chat: https://github.com/chep/copilot-chat.el
  
@@ -1726,9 +1733,10 @@ Fly check
 
   (when (string= (system-name) "16inMachine.local")
     (load "~/dotfiles/init-lsp.el")
-    (load "~/dotfiles/init-copilot.el")
     )
-   
+
+  (load "~/dotfiles/init-copilot.el")
+  
 #+end_src
 
 
