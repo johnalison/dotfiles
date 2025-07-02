@@ -56,8 +56,8 @@ Open an emacs frame
 #+end_src
 
 ** Local
-
-#+begin_src shell :tangle (if (string= (system-name) "16inMachine.local") "~/dotfiles/.aliases" "no")
+ 
+#+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
  
   alias nemacs='/opt/homebrew/bin/emacs -nw'
   alias nemcas='/opt/homebrew/bin/emacs -nw'
@@ -73,8 +73,8 @@ Open an emacs frame
 
 
 ** Remote
- 
-#+begin_src shell :tangle (if (not (string= (system-name) "16inMachine.local")) "~/dotfiles/.aliases" "no")
+  
+#+begin_src shell :tangle (if (not (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu"))) "~/dotfiles/.aliases" "no")
 
   alias nemacs='/usr/bin/emacs -nw'
   alias nemcas='/usr/bin/emacs -nw'
@@ -85,7 +85,7 @@ Open an emacs frame
   alias emcas='emacs'
   alias eamcs='emacs'
   alias emasc='emacs'
-  
+
 #+end_src
 
 

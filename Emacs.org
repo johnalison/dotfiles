@@ -1338,6 +1338,9 @@ https://github.com/abo-abo/org-download
     :straight t
     )
 
+  (setq org-download-image-dir "~/RoamNotes/images/")
+
+
   (add-hook 'dired-mode-hook 'org-download-enable)
 
 #+end_src
@@ -1637,7 +1640,7 @@ Fly check
     (pyvenv-mode 1))
 
 
-  (add-hook 'python-mode-hook (lambda () (company-mode -1)))
+  ;;(add-hook 'python-mode-hook (lambda () (company-mode -1)))
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
   (use-package lsp-mode
