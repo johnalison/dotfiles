@@ -1753,7 +1753,9 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
     (when (or (string-equal (buffer-file-name)
   			  (expand-file-name "~/dotfiles/Emacs.org"))
   	    (string-equal (buffer-file-name)
-  			  (expand-file-name "~/dotfiles/aliases.org")))
+  			  (expand-file-name "~/dotfiles/aliases.org"))
+  	    (string-equal (buffer-file-name)
+  			  (expand-file-name "~/dotfiles/bashrc.org")))
       ;; Dynamic scoping to the rescue
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))

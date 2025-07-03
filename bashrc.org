@@ -1,0 +1,102 @@
+#+title: Bash Alias Configuration
+#+PROPERTY: header-args:shell :tangle ~/dotfiles/setupBash.sh
+
+
+
+* User specific aliases and functions
+
+#+begin_src shell
+
+  if [ -f /etc/bashrc ]; then
+  	. /etc/bashrc
+  fi
+
+#+end_src
+
+
+* Home brew
+
+#+begin_src shell
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+#+end_src
+
+
+
+* Set my prompt
+#+begin_src shell
+
+  PS1='[\h] ${PWD} > '
+  
+#+end_src
+
+
+*  Read in my aliases as set in the file .aliases in my home directory
+
+#+begin_src shell
+
+  source ~/.aliases
+  
+#+end_src
+
+
+#+begin_src shell
+  
+   export PYTHONSTARTUP=$HOME/.pythonrc.py
+
+#+end_src
+
+#+begin_src shell
+
+  export TEXINPUTS=./:/usr/local/texlive/2024/texmf-dist/tex//:/Users/johnda/papers/latexBaseFiles
+
+#+end_src
+
+
+#+begin_src shell
+
+  export LD_LIBRARY_PATH=$ROOTSYS/lib:$PYTHONDIR/lib:$LD_LIBRARY_PATH
+
+#+end_src
+
+
+
+* for the MAc
+
+#+begin_src shell
+
+  export CLICOLOR=1
+  export LSCOLORS=ExFxCxDxBxegedabagacad
+  #export ForbiddenFruitPro=/Volumes/LaCie/Backups.backupdb/ForbiddenFruitPro/Latest/Macintosh*HD/Users/johnda/
+    
+#+end_src
+
+
+
+* Set-up git tab complete
+
+#+begin_src shell
+
+  if [ -f /usr/local/etc/bash_completion ]; then
+      . /usr/local/etc/bash_completion
+  fi
+    
+#+end_src
+
+#+begin_src shell
+
+  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion || {
+      # if not found in /usr/local/etc, try the brew --prefix location
+      [ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ] && \
+          . $(brew --prefix)/etc/bash_completion.d/git-completion.bash
+  }
+    
+#+end_src
+
+
+* TODO Turn off if not falcon
+#+begin_src shell
+
+  export SINGULARITY_CACHEDIR="/mnt/scratch/${USER}/.apptainer/"
+  export SINGULARITY_TMPDIR="/mnt/scratch/${USER}/.apptainer/"
+  
+#+end_src
