@@ -37,11 +37,15 @@ Simplify the UI
   ;; Simplify the UI
   (setq inhibit-startup-message t)
 
-  (scroll-bar-mode -1)        ; Disable visible scrollbar
+
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
-  (set-fringe-mode 10)        ; Give some breathing room
   (menu-bar-mode -1)          ; Disable the menu bar
+
+  (when (display-graphic-p)
+    (scroll-bar-mode -1)        ; Disable visible scrollbar
+    (set-fringe-mode 10))        ; Give some breathing room
+
 
 
   ;; Set up the visible bell
@@ -1797,7 +1801,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 * Org-Mode Expoerts 
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
   (setq org-export-with-title nil
         org-export-with-author nil
@@ -1812,7 +1816,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 * PDF Viewer
 https://github.com/vedang/pdf-tools?tab=readme-ov-file
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
   (use-package pdf-tools
     :straight t
