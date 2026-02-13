@@ -119,6 +119,11 @@ CMU/CMS
   alias cmslpc7='ssh -Y  jda102@cmslpc-sl7.fnal.gov'
   alias cmut3='ssh -Y johnda@cmsdata.phys.cmu.edu'
 
+  alias cmslpcgpu1='ssh -XY jda102@cmslpcgpu1.fnal.gov'
+  alias cmslpcgpu2='ssh -XY jda102@cmslpcgpu2.fnal.gov'
+  alias cmslpcgpu3='ssh -XY jda102@cmslpcgpu3.fnal.gov'    
+
+
   alias cleanroom="ssh pi@172.26.197.92"
   alias cleanroom="echo pwd: cleanroom ; ssh pi@cleanroom.wifi.cmu.edu"
   alias cleanroom2="echo pwd: cleanroom2 ; ssh pi@cleanroom2.wifi.cmu.edu"

@@ -1,7 +1,7 @@
 #+title: Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init.el
 
-
+ 
 * Package System Setup
 
 ** Straight.el
@@ -191,6 +191,7 @@ Save hist
   (global-set-key "\C-h" 'delete-backward-char)
   (global-set-key (kbd "C-?") 'help-command)
   (global-set-key "\M-h" 'backward-kill-word)
+  (global-set-key "\M-c" 'quick-calc)  
   ;;(global-set-key "\M-w" 'ispell-word)
   (global-set-key "\M-#" 'ispell-region)
 
@@ -935,14 +936,6 @@ This section contains the basic configuration for org-mode plus the configuratio
 
   (add-hook 'org-mode-hook 'abbrev-mode)
 
-  (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))
-
-  ;;
-  ;; Make ~ red text.
-  ;;
-  (add-to-list 'org-emphasis-alist '("~" (:foreground "red") nil))
-  
-
 
 #+end_src
 
@@ -1012,7 +1005,10 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
   (setq org-startup-with-latex-preview t)
   (setq org-startup-with-inline-images t)
   (setq org-image-actual-width '(300))
-  
+
+
+
+    
 #+end_src
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
@@ -1803,11 +1799,13 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
-  (setq org-export-with-title nil
+  (setq org-export-with-title t
         org-export-with-author nil
         org-export-with-date nil
         org-export-with-toc nil
         org-export-with-section-numbers nil
+        org-html-validation-link nil     ;; remove the W3C validation link everywhere
+        org-html-postamble nil   ;; remove the entire footer (postamble), which is where “Created:” lives
         )
     
 #+end_src
@@ -1826,6 +1824,13 @@ https://github.com/vedang/pdf-tools?tab=readme-ov-file
 
   (use-package org-pdfview
     :straight t)
-    
+
+  ;;
+  ;; Make ~ red text.
+  ;;
+  (add-to-list 'org-emphasis-alist '("~" (:foreground "red") nil))
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))  
+
+
 #+end_src
 
