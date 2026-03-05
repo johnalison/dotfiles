@@ -530,6 +530,64 @@ Look up function... Should probalbly being gptel-quick instead !
 #+end_src
 
 
+* Claude-Code
+https://github.com/stevemolitor/claude-code.el
+
+#+begin_src emacs-lisp
+
+
+;  (straight-use-package
+;   '(monet :type git :host github :repo "stevemolitor/monet"))
+
+(use-package monet
+  :straight (:type git :host github :repo "stevemolitor/monet" :depth 1)
+  :demand t
+  :custom
+  (monet-prefix-key "C-c o"))
+  
+    
+#+end_src
+
+
+#+begin_src emacs-lisp
+
+  ;; install required inheritenv dependency:
+   (use-package inheritenv
+     :straight (:type git :host github :repo "purcell/inheritenv"))
+
+   ;; for eat terminal backend:
+   (use-package eat
+     :straight (:type git
+                      :host codeberg
+                      :repo "akib/emacs-eat"
+                      :files ("*.el" ("term" "term/*.el") "*.texi"
+                              "*.ti" ("terminfo/e" "terminfo/e/*")
+                              ("terminfo/65" "terminfo/65/*")
+                              ("integration" "integration/*")
+                              (:exclude ".dir-locals.el" "*-tests.el"))))
+
+   ;; for vterm terminal backend:
+   ;;(use-package vterm :straight t)
+
+
+   ;; install claude-code.el, using :depth 1 to reduce download size:
+   (use-package claude-code
+     :straight (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
+                      :files ("*.el" (:exclude "images/*")))
+     :bind-keymap
+     ("C-c c" . claude-code-command-map) ;; or your preferred key
+     ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+     :bind
+     (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+     :config
+     ;; optional IDE integration with Monet
+     (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+     (monet-mode 1)
+
+     (claude-code-mode))
+#+end_src
+
+
 * Vertigo
 
 The [[https://github.com/minad/vertico][Vertigo]] package applies a vertical layout to the minibuffer. It also pops up the minibuffer eagerly so we can see the available options without further interactions. This package is very fast and "just works", though it also is highly customisable in case we need to modify its behaviour.
@@ -1834,3 +1892,16 @@ https://github.com/vedang/pdf-tools?tab=readme-ov-file
 
 #+end_src
 
+* Telega
+
+https://github.com/zevlg/telega.el
+
+#+begin_src emacs-lisp
+
+  (use-package telega
+    :straight t
+    :commands telega
+    :custom
+    (telega-server-libs-prefix "/opt/homebrew"))
+
+#+end_src
