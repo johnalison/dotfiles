@@ -1281,7 +1281,6 @@ Show *Org Agenda* in a right‑side window (≈ 50 % of the frame)
     
 #+end_src
 
-
 * Setup Git Auto Commits
 
 Auto git every hour
@@ -1405,6 +1404,38 @@ Helper functions for defining emails lists with tab completion
     (let ((emails (jda/get--group-emails group)))
       (insert (mapconcat 'identity emails ", "))))
 
+
+#+end_src
+
+
+* Agenda Store ID Link
+
+From the agenda, store a permanent =id:= link to the task headline.
+Bound to =C-c s= in agenda. Link is =[[id:UUID][Heading Text]]= format —
+safe across file moves (Tasks.org → Archive.org) and carries a readable
+description. Links persist in the list after insertion.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  ;; Keep stored links available after insertion so the same link
+  ;; can be reused across multiple notes.
+  (setq org-keep-stored-link-after-insertion t)
+
+  (defun my/org-agenda-store-id-link ()
+    "From org-agenda, jump to the task headline, store a permanent id: link,
+  then return to the agenda.  Use C-c C-l to insert the link in any org buffer.
+  The link description is the heading text (tags, TODO, priority stripped)."
+    (interactive)
+    (unless (derived-mode-p 'org-agenda-mode)
+      (user-error "This must be called from an org-agenda buffer"))
+    (save-window-excursion
+      (org-agenda-switch-to)
+      (let* ((id   (org-id-get-create))
+             (desc (or (org-get-heading t t t t) id)))
+        (push (list (concat "id:" id) desc) org-stored-links)))
+    (message "ID link stored — use C-c C-l to insert it."))
+
+  (define-key org-agenda-mode-map (kbd "C-c s") #'my/org-agenda-store-id-link)
 
 #+end_src
 

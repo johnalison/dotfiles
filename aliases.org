@@ -55,20 +55,32 @@ Open an emacs frame
 
 #+end_src
 
+* Claude
+
+Quick non-interactive Claude invocation for short command-line tasks.
+Uses Haiku for speed; whitelists common filesystem tools; caps at 5 agentic turns.
+ 
+#+begin_src shell
+
+  alias CLaI='claude -p --model haiku --allowedTools "Bash,Read,Write,Edit,Glob" --max-turns 5 '
+
+#+end_src
+
 ** Local
- 
-#+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
- 
+
+#+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")  (string= (system-name) "16inMachine")) "~/dotfiles/.aliases" "no")
+
   alias nemacs='/opt/homebrew/bin/emacs -nw'
   alias nemcas='/opt/homebrew/bin/emacs -nw'
   alias neamcs='/opt/homebrew/bin/emacs -nw'
   alias nemasc='/opt/homebrew/bin/emacs -nw'
   alias neamsc='/opt/homebrew/bin/emacs -nw'
-  alias emacs="open -a /Applications/Emacs.app"
+  #alias emacs="open -a /Applications/Emacs.app"
+  alias emacs='/opt/homebrew/bin/emacs'
   alias emcas='emacs'
   alias eamcs='emacs'
   alias emasc='emacs'
-  
+
 #+end_src
 
 
