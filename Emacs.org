@@ -422,8 +422,6 @@ https://github.com/copilot-emacs/copilot.el
 
 
 Chat: https://github.com/chep/copilot-chat.el
- 
-Automatically make git commit messages. 
 
 #+begin_src emacs-lisp
 
@@ -431,11 +429,56 @@ Automatically make git commit messages.
     :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
     :after (request org markdown-mode))
 
-  (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
   (global-set-key (kbd "C-c c") 'copilot-chat-transient)
 
 #+end_src
 
+Generate git commit messages via gptel instead of copilot.
+
+#+begin_src emacs-lisp
+
+  (defvar my/commit-message-buffer nil
+    "Buffer into which the next gptel commit message response will be inserted.")
+
+  (defvar my/commit-message-placeholder nil
+    "Placeholder string inserted while waiting for the gptel commit message response.")
+
+  (defun my/insert-commit-message ()
+    "Generate a git commit message via gptel and insert it into the commit buffer."
+    (let ((diff (shell-command-to-string "git diff --cached")))
+      (when (string-empty-p diff)
+        (setq diff (shell-command-to-string "git diff HEAD")))
+      (if (string-empty-p diff)
+          (message "No staged changes found for commit message generation.")
+        (setq my/commit-message-buffer (current-buffer))
+        (setq my/commit-message-placeholder
+              (format "# Generating commit message from %s...\n" gptel-model))
+        (goto-char (point-min))
+        (insert my/commit-message-placeholder)
+        (gptel-request
+         (concat
+          "Write a concise git commit message for the following diff.\n"
+          "Use the imperative mood, keep the subject line under 72 characters,\n"
+          "and add a blank line followed by bullet-point details if the change warrants it.\n"
+          "Output only the commit message text, no commentary.\n\n"
+          diff)
+         :callback (lambda (response info)
+                     (with-current-buffer my/commit-message-buffer
+                       (goto-char (point-min))
+                       (when (looking-at (regexp-quote my/commit-message-placeholder))
+                         (delete-region (point) (match-end 0)))
+                       (if (not response)
+                           (message "gptel commit message error: %s" (plist-get info :status))
+                         (insert response)
+                         (insert "\n"))))))))
+
+  (add-hook 'git-commit-setup-hook 'my/insert-commit-message)
+
+#+end_src
+
+#+RESULTS:
+| git-commit-ensure-comment-gap | git-commit-save-message | git-commit-setup-changelog-support | git-commit-turn-on-auto-fill | git-commit-propertize-diff | bug-reference-mode | my/insert-commit-message |
+ 
 
 * GPTel
 
