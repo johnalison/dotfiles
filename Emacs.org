@@ -443,6 +443,12 @@ Generate git commit messages via gptel instead of copilot.
   (defvar my/commit-message-placeholder nil
     "Placeholder string inserted while waiting for the gptel commit message response.")
 
+  (defvar my/commit-message-marker nil
+    "Marker tracking the streaming insertion point in the commit buffer.")
+
+  (defconst my/commit-diff-max-chars 8000
+    "Maximum characters of diff to send to the LLM.")
+
   (defun my/insert-commit-message ()
     "Generate a git commit message via gptel and insert it into the commit buffer."
     (let ((diff (shell-command-to-string "git diff --cached")))
@@ -450,11 +456,16 @@ Generate git commit messages via gptel instead of copilot.
         (setq diff (shell-command-to-string "git diff HEAD")))
       (if (string-empty-p diff)
           (message "No staged changes found for commit message generation.")
+        (when (> (length diff) my/commit-diff-max-chars)
+          (setq diff (concat (substring diff 0 my/commit-diff-max-chars)
+                             "\n... [diff truncated]")))
         (setq my/commit-message-buffer (current-buffer))
         (setq my/commit-message-placeholder
               (format "# Generating commit message from %s...\n" gptel-model))
+        (setq my/commit-message-marker (make-marker))
         (goto-char (point-min))
         (insert my/commit-message-placeholder)
+        (set-marker my/commit-message-marker (point-min))
         (gptel-request
          (concat
           "Write a concise git commit message for the following diff.\n"
@@ -462,22 +473,27 @@ Generate git commit messages via gptel instead of copilot.
           "and add a blank line followed by bullet-point details if the change warrants it.\n"
           "Output only the commit message text, no commentary.\n\n"
           diff)
+         :stream t
          :callback (lambda (response info)
                      (with-current-buffer my/commit-message-buffer
                        (goto-char (point-min))
                        (when (looking-at (regexp-quote my/commit-message-placeholder))
-                         (delete-region (point) (match-end 0)))
-                       (if (not response)
-                           (message "gptel commit message error: %s" (plist-get info :status))
-                         (insert response)
-                         (insert "\n"))))))))
+                         (delete-region (point) (match-end 0))
+                         (set-marker my/commit-message-marker (point-min)))
+                       (cond
+                         ((stringp response)
+                          (goto-char my/commit-message-marker)
+                          (insert response)
+                          (set-marker my/commit-message-marker (point)))
+                         ((not response)
+                          (message "gptel commit message error: %s" (plist-get info :status)))))))))))
 
   (add-hook 'git-commit-setup-hook 'my/insert-commit-message)
 
 #+end_src
 
 #+RESULTS:
-| git-commit-ensure-comment-gap | git-commit-save-message | git-commit-setup-changelog-support | git-commit-turn-on-auto-fill | git-commit-propertize-diff | bug-reference-mode | my/insert-commit-message |
+: my/insert-commit-message
  
 
 * GPTel
