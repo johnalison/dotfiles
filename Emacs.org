@@ -421,17 +421,17 @@ https://github.com/copilot-emacs/copilot.el
 #+end_src
 
 
-Chat: https://github.com/chep/copilot-chat.el
-
-#+begin_src emacs-lisp
-
-  (use-package copilot-chat
-    :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-    :after (request org markdown-mode))
-
-  (global-set-key (kbd "C-c c") 'copilot-chat-transient)
-
-#+end_src
+# Chat: https://github.com/chep/copilot-chat.el
+# 
+# #+begin_src emacs-lisp
+# 
+#   (use-package copilot-chat
+#     :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+#     :after (request org markdown-mode))
+# 
+#   (global-set-key (kbd "C-c c") 'copilot-chat-transient)
+# 
+# #+end_src
 
 Generate git commit messages via gptel instead of copilot.
 
@@ -509,7 +509,8 @@ Generate git commit messages via gptel instead of copilot.
       
       ;; or, read from your shell’s env var:
       (setq gptel-api-key (getenv "OPENAI_API_KEY"))
-      (setq gptel-model "claude-sonnet-4-20250514"
+      ;(setq gptel-model "claude-sonnet-4-20250514"
+      (setq gptel-model "claude-sonnet-4-6"
     	gptel-backend (gptel-make-anthropic "Claude"
     			:stream t
     			:key (getenv "CLAUDE_API_KEY"))))
