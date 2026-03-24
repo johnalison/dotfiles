@@ -58,7 +58,11 @@
 
 #+end_src
 
+* Copying
 
+#+begin_src shell
+  export LPC=jda102@cmslpc-el9.fnal.gov
+#+end_src
 
 * for the MAc
 

@@ -1,7 +1,7 @@
 #+title: Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init.el
 
-
+ 
 * Package System Setup
 
 ** Straight.el
@@ -37,11 +37,15 @@ Simplify the UI
   ;; Simplify the UI
   (setq inhibit-startup-message t)
 
-  (scroll-bar-mode -1)        ; Disable visible scrollbar
+
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
-  (set-fringe-mode 10)        ; Give some breathing room
   (menu-bar-mode -1)          ; Disable the menu bar
+
+  (when (display-graphic-p)
+    (scroll-bar-mode -1)        ; Disable visible scrollbar
+    (set-fringe-mode 10))        ; Give some breathing room
+
 
 
   ;; Set up the visible bell
@@ -187,6 +191,7 @@ Save hist
   (global-set-key "\C-h" 'delete-backward-char)
   (global-set-key (kbd "C-?") 'help-command)
   (global-set-key "\M-h" 'backward-kill-word)
+  (global-set-key "\M-c" 'quick-calc)  
   ;;(global-set-key "\M-w" 'ispell-word)
   (global-set-key "\M-#" 'ispell-region)
 
@@ -416,21 +421,80 @@ https://github.com/copilot-emacs/copilot.el
 #+end_src
 
 
-Chat: https://github.com/chep/copilot-chat.el
- 
-Automatically make git commit messages. 
+# Chat: https://github.com/chep/copilot-chat.el
+# 
+# #+begin_src emacs-lisp
+# 
+#   (use-package copilot-chat
+#     :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+#     :after (request org markdown-mode))
+# 
+#   (global-set-key (kbd "C-c c") 'copilot-chat-transient)
+# 
+# #+end_src
+
+Generate git commit messages via gptel instead of copilot.
 
 #+begin_src emacs-lisp
 
-  (use-package copilot-chat
-    :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-    :after (request org markdown-mode))
+  (defvar my/commit-message-buffer nil
+    "Buffer into which the next gptel commit message response will be inserted.")
 
-  (add-hook 'git-commit-setup-hook 'copilot-chat-insert-commit-message)
-  (global-set-key (kbd "C-c c") 'copilot-chat-transient)
+  (defvar my/commit-message-placeholder nil
+    "Placeholder string inserted while waiting for the gptel commit message response.")
+
+  (defvar my/commit-message-marker nil
+    "Marker tracking the streaming insertion point in the commit buffer.")
+
+  (defconst my/commit-diff-max-chars 8000
+    "Maximum characters of diff to send to the LLM.")
+
+  (defun my/insert-commit-message ()
+    "Generate a git commit message via gptel and insert it into the commit buffer."
+    (let ((diff (shell-command-to-string "git diff --cached")))
+      (when (string-empty-p diff)
+        (setq diff (shell-command-to-string "git diff HEAD")))
+      (if (string-empty-p diff)
+          (message "No staged changes found for commit message generation.")
+        (when (> (length diff) my/commit-diff-max-chars)
+          (setq diff (concat (substring diff 0 my/commit-diff-max-chars)
+                             "\n... [diff truncated]")))
+        (setq my/commit-message-buffer (current-buffer))
+        (setq my/commit-message-placeholder
+              (format "# Generating commit message from %s...\n" gptel-model))
+        (setq my/commit-message-marker (make-marker))
+        (goto-char (point-min))
+        (insert my/commit-message-placeholder)
+        (set-marker my/commit-message-marker (point-min))
+        (gptel-request
+         (concat
+          "Write a concise git commit message for the following diff.\n"
+          "Use the imperative mood, keep the subject line under 72 characters,\n"
+          "and add a blank line followed by bullet-point details if the change warrants it.\n"
+          "Output only the commit message text, no commentary.\n\n"
+          diff)
+         :stream t
+         :callback (lambda (response info)
+                     (with-current-buffer my/commit-message-buffer
+                       (goto-char (point-min))
+                       (when (looking-at (regexp-quote my/commit-message-placeholder))
+                         (delete-region (point) (match-end 0))
+                         (set-marker my/commit-message-marker (point-min)))
+                       (cond
+                         ((stringp response)
+                          (goto-char my/commit-message-marker)
+                          (insert response)
+                          (set-marker my/commit-message-marker (point)))
+                         ((not response)
+                          (message "gptel commit message error: %s" (plist-get info :status))))))))))
+
+  (add-hook 'git-commit-setup-hook 'my/insert-commit-message)
 
 #+end_src
 
+#+RESULTS:
+| git-commit-ensure-comment-gap | git-commit-save-message | git-commit-setup-changelog-support | git-commit-turn-on-auto-fill | git-commit-propertize-diff | bug-reference-mode | my/insert-commit-message |
+ 
 
 * GPTel
 
@@ -445,7 +509,8 @@ Automatically make git commit messages.
       
       ;; or, read from your shell’s env var:
       (setq gptel-api-key (getenv "OPENAI_API_KEY"))
-      (setq gptel-model "claude-sonnet-4-20250514"
+      ;(setq gptel-model "claude-sonnet-4-20250514"
+      (setq gptel-model "claude-sonnet-4-6"
     	gptel-backend (gptel-make-anthropic "Claude"
     			:stream t
     			:key (getenv "CLAUDE_API_KEY"))))
@@ -522,6 +587,64 @@ Look up function... Should probalbly being gptel-quick instead !
                               (window-height . ,#'fit-window-to-buffer))))))))
 
 
+#+end_src
+
+
+* Claude-Code
+https://github.com/stevemolitor/claude-code.el
+
+#+begin_src emacs-lisp
+
+
+;  (straight-use-package
+;   '(monet :type git :host github :repo "stevemolitor/monet"))
+
+(use-package monet
+  :straight (:type git :host github :repo "stevemolitor/monet" :depth 1)
+  :demand t
+  :custom
+  (monet-prefix-key "C-c o"))
+  
+    
+#+end_src
+
+
+#+begin_src emacs-lisp
+
+  ;; install required inheritenv dependency:
+   (use-package inheritenv
+     :straight (:type git :host github :repo "purcell/inheritenv"))
+
+   ;; for eat terminal backend:
+   (use-package eat
+     :straight (:type git
+                      :host codeberg
+                      :repo "akib/emacs-eat"
+                      :files ("*.el" ("term" "term/*.el") "*.texi"
+                              "*.ti" ("terminfo/e" "terminfo/e/*")
+                              ("terminfo/65" "terminfo/65/*")
+                              ("integration" "integration/*")
+                              (:exclude ".dir-locals.el" "*-tests.el"))))
+
+   ;; for vterm terminal backend:
+   ;;(use-package vterm :straight t)
+
+
+   ;; install claude-code.el, using :depth 1 to reduce download size:
+   (use-package claude-code
+     :straight (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
+                      :files ("*.el" (:exclude "images/*")))
+     :bind-keymap
+     ("C-c c" . claude-code-command-map) ;; or your preferred key
+     ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+     :bind
+     (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+     :config
+     ;; optional IDE integration with Monet
+     (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+     (monet-mode 1)
+
+     (claude-code-mode))
 #+end_src
 
 
@@ -931,14 +1054,6 @@ This section contains the basic configuration for org-mode plus the configuratio
 
   (add-hook 'org-mode-hook 'abbrev-mode)
 
-  (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))
-
-  ;;
-  ;; Make ~ red text.
-  ;;
-  (add-to-list 'org-emphasis-alist '("~" (:foreground "red") nil))
-  
-
 
 #+end_src
 
@@ -1008,7 +1123,10 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
   (setq org-startup-with-latex-preview t)
   (setq org-startup-with-inline-images t)
   (setq org-image-actual-width '(300))
-  
+
+
+
+    
 #+end_src
 
 #+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
@@ -1223,7 +1341,6 @@ Show *Org Agenda* in a right‑side window (≈ 50 % of the frame)
     
 #+end_src
 
-
 * Setup Git Auto Commits
 
 Auto git every hour
@@ -1347,6 +1464,38 @@ Helper functions for defining emails lists with tab completion
     (let ((emails (jda/get--group-emails group)))
       (insert (mapconcat 'identity emails ", "))))
 
+
+#+end_src
+
+
+* Agenda Store ID Link
+
+From the agenda, store a permanent =id:= link to the task headline.
+Bound to =C-c s= in agenda. Link is =[[id:UUID][Heading Text]]= format —
+safe across file moves (Tasks.org → Archive.org) and carries a readable
+description. Links persist in the list after insertion.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  ;; Keep stored links available after insertion so the same link
+  ;; can be reused across multiple notes.
+  (setq org-keep-stored-link-after-insertion t)
+
+  (defun my/org-agenda-store-id-link ()
+    "From org-agenda, jump to the task headline, store a permanent id: link,
+  then return to the agenda.  Use C-c C-l to insert the link in any org buffer.
+  The link description is the heading text (tags, TODO, priority stripped)."
+    (interactive)
+    (unless (derived-mode-p 'org-agenda-mode)
+      (user-error "This must be called from an org-agenda buffer"))
+    (save-window-excursion
+      (org-agenda-switch-to)
+      (let* ((id   (org-id-get-create))
+             (desc (or (org-get-heading t t t t) id)))
+        (push (list (concat "id:" id) desc) org-stored-links)))
+    (message "ID link stored — use C-c C-l to insert it."))
+
+  (define-key org-agenda-mode-map (kbd "C-c s") #'my/org-agenda-store-id-link)
 
 #+end_src
 
@@ -1799,13 +1948,15 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 * Org-Mode Expoerts 
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
-  (setq org-export-with-title nil
+  (setq org-export-with-title t
         org-export-with-author nil
         org-export-with-date nil
         org-export-with-toc nil
         org-export-with-section-numbers nil
+        org-html-validation-link nil     ;; remove the W3C validation link everywhere
+        org-html-postamble nil   ;; remove the entire footer (postamble), which is where “Created:” lives
         )
     
 #+end_src
@@ -1814,7 +1965,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 * PDF Viewer
 https://github.com/vedang/pdf-tools?tab=readme-ov-file
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
 
   (use-package pdf-tools
     :straight t
@@ -1824,6 +1975,26 @@ https://github.com/vedang/pdf-tools?tab=readme-ov-file
 
   (use-package org-pdfview
     :straight t)
-    
+
+  ;;
+  ;; Make ~ red text.
+  ;;
+  (add-to-list 'org-emphasis-alist '("~" (:foreground "red") nil))
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))  
+
+
 #+end_src
 
+* Telega
+
+https://github.com/zevlg/telega.el
+
+#+begin_src emacs-lisp
+
+  (use-package telega
+    :straight t
+    :commands telega
+    :custom
+    (telega-server-libs-prefix "/opt/homebrew"))
+
+#+end_src

@@ -55,20 +55,32 @@ Open an emacs frame
 
 #+end_src
 
+* Claude
+
+Quick non-interactive Claude invocation for short command-line tasks.
+Uses Haiku for speed; whitelists common filesystem tools; caps at 5 agentic turns.
+ 
+#+begin_src shell
+
+  alias CLaI='claude -p --model haiku --allowedTools "Bash,Read,Write,Edit,Glob" --max-turns 5 '
+
+#+end_src
+
 ** Local
- 
-#+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")) "~/dotfiles/.aliases" "no")
- 
+
+#+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")  (string= (system-name) "16inMachine")) "~/dotfiles/.aliases" "no")
+
   alias nemacs='/opt/homebrew/bin/emacs -nw'
   alias nemcas='/opt/homebrew/bin/emacs -nw'
   alias neamcs='/opt/homebrew/bin/emacs -nw'
   alias nemasc='/opt/homebrew/bin/emacs -nw'
   alias neamsc='/opt/homebrew/bin/emacs -nw'
-  alias emacs="open -a /Applications/Emacs.app"
+  #alias emacs="open -a /Applications/Emacs.app"
+  alias emacs='/opt/homebrew/bin/emacs'
   alias emcas='emacs'
   alias eamcs='emacs'
   alias emasc='emacs'
-  
+
 #+end_src
 
 
@@ -118,6 +130,11 @@ CMU/CMS
   alias cmslpc6='ssh -Y  jda102@cmslpc-sl6.fnal.gov'
   alias cmslpc7='ssh -Y  jda102@cmslpc-sl7.fnal.gov'
   alias cmut3='ssh -Y johnda@cmsdata.phys.cmu.edu'
+
+  alias cmslpcgpu1='ssh -XY jda102@cmslpcgpu1.fnal.gov'
+  alias cmslpcgpu2='ssh -XY jda102@cmslpcgpu2.fnal.gov'
+  alias cmslpcgpu3='ssh -XY jda102@cmslpcgpu3.fnal.gov'    
+
 
   alias cleanroom="ssh pi@172.26.197.92"
   alias cleanroom="echo pwd: cleanroom ; ssh pi@cleanroom.wifi.cmu.edu"
