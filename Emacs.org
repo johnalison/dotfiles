@@ -41,7 +41,7 @@ Simplify the UI
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
   (menu-bar-mode -1)          ; Disable the menu bar
-
+ 
   (when (display-graphic-p)
     (scroll-bar-mode -1)        ; Disable visible scrollbar
     (set-fringe-mode 10))        ; Give some breathing room
@@ -492,8 +492,6 @@ Generate git commit messages via gptel instead of copilot.
 
 #+end_src
 
-#+RESULTS:
-| git-commit-ensure-comment-gap | git-commit-save-message | git-commit-setup-changelog-support | git-commit-turn-on-auto-fill | git-commit-propertize-diff | bug-reference-mode | my/insert-commit-message |
  
 
 * GPTel
