@@ -1752,8 +1752,10 @@ Fly check
     (load "~/dotfiles/init-lsp.el")
     )
 
-  (load "~/dotfiles/init-copilot.el")
-  
+  (when (string= (system-name) "16inMachine.local")
+   (load "~/dotfiles/init-copilot.el")
+  )
+
 #+end_src
 
 
