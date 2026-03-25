@@ -2019,6 +2019,9 @@ https://github.com/zevlg/telega.el
     :straight t
     :commands telega
     :custom
-    (telega-server-libs-prefix "/opt/homebrew"))
+    (telega-server-libs-prefix "/opt/homebrew")
+    :config
+    (define-key telega-chat-mode-map (kbd "<backtab>") 'dabbrev-expand))
 
 #+end_src
+
