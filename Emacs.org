@@ -560,7 +560,7 @@ Generate git commit messages via gptel instead of copilot.
     
       (gptel-make-preset 'default
         :description "Default preset"
-        :system ""You are a large language model living in Emacs and a helpful assistant. Respond concisely."
+        :system "You are a large language model living in Emacs and a helpful assistant. Respond concisely."
         :use-context 'system)
   
 
