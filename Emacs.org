@@ -501,62 +501,85 @@ Generate git commit messages via gptel instead of copilot.
 
 #+begin_src emacs-lisp
 
-  (use-package gptel
-      :straight t
-      :config
-      ;; either hard‑code it (not recommended for shared configs):
-      ;;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
-      
-      ;; or, read from your shell’s env var:
-      (setq gptel-api-key (getenv "OPENAI_API_KEY"))
-      ;(setq gptel-model "claude-sonnet-4-20250514"
-      (setq gptel-model "claude-sonnet-4-6"
-    	gptel-backend (gptel-make-anthropic "Claude"
-    			:stream t
-    			:key (getenv "CLAUDE_API_KEY"))))
-      
+    (use-package gptel
+        :straight t
+        :config
+        ;; either hard‑code it (not recommended for shared configs):
+        ;;(setq gptel-api-key "sk‑YOUR_SECRET_KEY_HERE")
+        
+        ;; or, read from your shell’s env var:
+        (setq gptel-api-key (getenv "OPENAI_API_KEY"))
+        ;(setq gptel-model "claude-sonnet-4-20250514"
+        (setq gptel-model "claude-sonnet-4-6"
+      	gptel-backend (gptel-make-anthropic "Claude"
+      			:stream t
+      			:key (getenv "CLAUDE_API_KEY"))))
+        
 
 
-    (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
-    (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
+      (add-to-list 'gptel-directives '(dict . "Provide synonyms for the word I provide. Respond with a list of words separated by commas; respond in one line."))
+      (add-to-list 'gptel-directives '(math . "I want you to act like a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expression. I want you to answer only with the final amount and nothing else. Do not write explanations. When I need to tell you something in English, I'll do it by putting the text inside square brackets {like this}."))
 
-    (global-set-key (kbd "C-c g") 'gptel-send)
-    (global-set-key (kbd "C-c m") 'gptel-menu)
-
-
-    (defun gptel-send-with-options (&optional arg)
-      "Send query.  With prefix ARG open gptel's menu instead."
-      (interactive "P")
-      (if arg
-          (call-interactively 'gptel-menu)
-        (gptel--suffix-send (transient-args 'gptel-menu))))
+      (global-set-key (kbd "C-c g") 'gptel-send)
+      (global-set-key (kbd "C-c m") 'gptel-menu)
 
 
-    ;; Optional defaults
-    (setq gptel-use-tools t                 ; allow tool use by default
-          gptel-confirm-tool-calls nil        ; ask before each invocation
-          gptel-include-tool-results nil)     ; echo results back to the model
+      (defun gptel-send-with-options (&optional arg)
+        "Send query.  With prefix ARG open gptel's menu instead."
+        (interactive "P")
+        (if arg
+            (call-interactively 'gptel-menu)
+          (gptel--suffix-send (transient-args 'gptel-menu))))
 
 
-    (gptel-make-preset 'proofreading
-      :description "Preset for proofreading tasks"
-      :system "Please copy edit this text. The replace will applied in place so only return the edited text."
-      :use-context 'system)
+      ;; Optional defaults
+      (setq gptel-use-tools t                 ; allow tool use by default
+            gptel-confirm-tool-calls nil        ; ask before each invocation
+            gptel-include-tool-results nil)     ; echo results back to the model
 
 
-  (gptel-make-anthropic "Claude-thinking" ;Any name you want
-    :key (getenv "CLAUDE_API_KEY")
-    :stream t
-    :models '(claude-3-7-sonnet-20250219)
-    :header (lambda () (when-let* ((key (gptel--get-api-key)))
-                    `(("x-api-key" . ,key)
-                      ("anthropic-version" . "2023-06-01")
-                      ("anthropic-beta" . "pdfs-2024-09-25")
-                      ("anthropic-beta" . "output-128k-2025-02-19")
-                      ("anthropic-beta" . "prompt-caching-2024-07-31"))))
-    :request-params '(:thinking (:type "enabled" :budget_tokens 2048)
-                      :max_tokens 4096))
+      (gptel-make-preset 'proofreading
+        :description "Preset for proofreading tasks"
+        :system "Please copy edit this text. The replace will applied in place so only return the edited text."
+        :use-context 'system)
+
+      (gptel-make-preset 'min-rewrite
+        :description "minimal rewrite"
+        :system "Can you rewrite for spelling and missed words. Don't change structure or phrasing. Please keep formatting roughly the same."
+        :use-context 'system)
+
+      (gptel-make-preset 'email
+        :description "Draft emails in John's voice"
+        :system "Draft or rewrite the following as an email in my voice. Rules:
+  - Greetings: 'Hi [First Name],' for known contacts; 'Dear Colleagues,' for groups; no greeting for terse thread replies
+  - Closings: 'john' (lowercase) for substantive emails; 'Thanks' for short replies; nothing for very short ones. Never: 'Best regards', 'Sincerely', 'Best', 'Looking forward to hearing from you'
+  - Length: 1-5 sentences for most replies; 2-3 short paragraphs max for multi-part questions
+  - No preamble, no pleasantries, jump straight to content
+  - Answer multi-part questions point-by-point inline, no bullet points
+  - Contractions fine; minimal exclamation marks
+  - Never write: 'I hope this email finds you well', 'Thank you for reaching out', 'Looking forward to hearing from you', or any formal closing")
+
     
+      (gptel-make-preset 'default
+        :description "Default preset"
+        :system ""You are a large language model living in Emacs and a helpful assistant. Respond concisely."
+        :use-context 'system)
+  
+
+
+    (gptel-make-anthropic "Claude-thinking" ;Any name you want
+      :key (getenv "CLAUDE_API_KEY")
+      :stream t
+      :models '(claude-3-7-sonnet-20250219)
+      :header (lambda () (when-let* ((key (gptel--get-api-key)))
+                      `(("x-api-key" . ,key)
+                        ("anthropic-version" . "2023-06-01")
+                        ("anthropic-beta" . "pdfs-2024-09-25")
+                        ("anthropic-beta" . "output-128k-2025-02-19")
+                        ("anthropic-beta" . "prompt-caching-2024-07-31"))))
+      :request-params '(:thinking (:type "enabled" :budget_tokens 2048)
+                        :max_tokens 4096))
+      
 
 #+end_src
 
@@ -1810,6 +1833,9 @@ Fly check
     :straight t
     :config
     (pyvenv-mode 1))
+
+  (use-package snakemake-mode
+    :straight t)
 
 
   ;;(add-hook 'python-mode-hook (lambda () (company-mode -1)))
