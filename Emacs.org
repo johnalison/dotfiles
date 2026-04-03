@@ -199,11 +199,30 @@ Save hist
   (global-set-key "\M-n" 'forward-paragraph)
   (global-set-key "\M-p" 'backward-paragraph)
 
+  (with-eval-after-load 'markdown-mode
+    (define-key markdown-mode-map (kbd "M-n") 'forward-paragraph)
+    (setq markdown-command "pandoc"))
+
   (global-set-key (kbd "C-c r") 'revert-buffer-quick)
   (global-set-key "\M-?" 'help-command)
   (global-set-key (kbd "<backtab>") 'dabbrev-expand)
 
 #+end_src
+
+
+* Grip Mode
+
+[[https://github.com/seagle0128/grip-mode][grip-mode]] renders Markdown using GitHub's API, giving a pixel-perfect GitHub preview in the browser.
+
+#+begin_src emacs-lisp
+
+  (use-package grip-mode
+    :straight t
+    :init (add-to-list 'exec-path (expand-file-name "~/.local/bin")))
+
+#+end_src
+
+#+RESULTS:
 
 
 * Which key
@@ -1602,6 +1621,8 @@ Need to fix client secret with gnp
 
   ;;(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
   ;;(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
+
+  (run-at-time t (* 8 3600) (lambda () (let ((inhibit-message t)) (org-gcal-sync))))
 
 
 #+end_src
