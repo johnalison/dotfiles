@@ -1,0 +1,31 @@
+#+title: tmux Configuration
+#+PROPERTY: header-args:conf :tangle ~/.tmux.conf
+
+* Status Bar
+
+** Colors
+
+~colour158~ is a soft mint green (xterm-256 palette), similar to the green used in
+Claude Code diff additions. Black foreground gives readable contrast on that background.
+
+To re-tangle after editing this file, open it in Emacs and run:
+  =M-x org-babel-tangle= (or =C-c C-v t=)
+
+#+begin_src conf
+
+  set -g status-style bg=colour158,fg=black
+
+#+end_src
+
+* Key Bindings
+
+** Copy Mode
+
+Page up/down with Meta-p and Meta-n in copy mode (mirrors Emacs scroll conventions).
+
+#+begin_src conf
+
+  bind -T copy-mode M-p send-keys -X page-up
+  bind -T copy-mode M-n send-keys -X page-down
+
+#+end_src 
