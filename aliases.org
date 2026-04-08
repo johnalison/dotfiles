@@ -59,13 +59,25 @@ Open an emacs frame
 
 Quick non-interactive Claude invocation for short command-line tasks.
 Uses Haiku for speed; whitelists common filesystem tools; caps at 5 agentic turns.
- 
+
 #+begin_src shell
 
   alias CLaI='claude -p --model haiku --allowedTools "Bash,Read,Write,Edit,Glob" --max-turns 5 '
 
 #+end_src
 
+* Master session
+
+Launch (or reattach to) the persistent master Claude session in tmux.
+Workers spawn as additional windows in the same =claude= session.
+
+#+begin_src shell
+
+  alias cmaster='tmux has-session -t claude 2>/dev/null && tmux -u attach-session -t claude || (tmux -u new-session -d -s claude -n master "cd ~ && claude" && tmux new-window -t claude -n cworkers "cworkers" && tmux select-window -t claude:master && tmux -u attach-session -t claude)'
+  alias cworkers='~/ClaudeBrain/bin/cworkers'
+
+#+end_src
+  
 ** Local
 
 #+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")  (string= (system-name) "16inMachine")) "~/dotfiles/.aliases" "no")
