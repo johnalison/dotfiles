@@ -1,6 +1,7 @@
 #+title: Emacs Configuration
-#+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init.el
 
+#+PROPERTY: header-args:emacs-lisp :tangle ~/dotfiles/init.el
+ 
  
 * Package System Setup
 
@@ -1836,12 +1837,12 @@ Fly check
 
 
 ** Python
- 
+  
 #+begin_src emacs-lisp
 
   (use-package python-mode
     :straight nil
-    :hook (python-mode . lsp-deferred)
+    ;:hook (python-mode . lsp-deferred)
     :bind (:map python-mode-map
   	      :package python
                 ("<backtab>" . dabbrev-expand))
