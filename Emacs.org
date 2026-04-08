@@ -1449,6 +1449,54 @@ Also Bind to M-S-mouse click based on the position of the mouse.
 #+end_src
 
 
+** Send region to wiki inbox
+
+Appends the selected region as an unprocessed idea to =~/ClaudeBrain/wiki-inbox.md=,
+under a =## YYYY-MM-DD= date section (creating it if needed). Bound to =C-c w i=.
+
+#+begin_src emacs-lisp :tangle ~/dotfiles/init-org.el
+
+  (defun my/send-region-to-wiki-inbox (beg end)
+    "Append the selected region to ~/ClaudeBrain/wiki-inbox.md as a - [ ] item.
+  Inserts a date heading (## YYYY-MM-DD) if today's section doesn't exist yet."
+    (interactive "r")
+    (let* ((text (string-trim (buffer-substring-no-properties beg end)))
+           (date (format-time-string "%Y-%m-%d"))
+           (heading (concat "## " date))
+           (inbox-path (expand-file-name "~/ClaudeBrain/wiki-inbox.md"))
+           (item (concat "- [ ] " text)))
+      (with-current-buffer (find-file-noselect inbox-path)
+        (goto-char (point-max))
+        ;; Check if today's heading exists anywhere in the file
+        (if (save-excursion (goto-char (point-min))
+                            (search-forward heading nil t))
+            ;; Heading exists — move to end of that section
+            (progn
+              (goto-char (point-min))
+              (search-forward heading)
+              (end-of-line)
+              ;; Skip forward past existing items in this section
+              (while (and (not (eobp))
+                          (progn (forward-line 1)
+                                 (or (looking-at "^- ")
+                                     (looking-at "^$"))))
+                nil)
+              ;; Back up to insert after the last item/blank line
+              (forward-line -1)
+              (end-of-line)
+              (insert "\n" item))
+          ;; No heading for today — append at end of file
+          (goto-char (point-max))
+          (unless (bolp) (insert "\n"))
+          (insert "\n" heading "\n" item "\n"))
+        (save-buffer))
+      (message "Sent to wiki inbox: %s" text)))
+
+  (global-set-key (kbd "C-c w i") #'my/send-region-to-wiki-inbox)
+
+#+end_src
+
+
 * Org Contacts
   
 Org-contacts configuration
@@ -1967,7 +2015,9 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
   	    (string-equal (buffer-file-name)
   			  (expand-file-name "~/dotfiles/aliases.org"))
   	    (string-equal (buffer-file-name)
-  			  (expand-file-name "~/dotfiles/bashrc.org")))
+  			  (expand-file-name "~/dotfiles/bashrc.org"))
+  	    (string-equal (buffer-file-name)
+  			  (expand-file-name "~/dotfiles/tmux.org")))
       ;; Dynamic scoping to the rescue
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))
@@ -1975,7 +2025,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 #+end_src
- 
+  
 
 * World Clock
 
