@@ -60,13 +60,28 @@ Open an emacs frame
 
 Quick non-interactive Claude invocation for short command-line tasks.
 Uses Haiku for speed; whitelists common filesystem tools; caps at 5 agentic turns.
- 
+
 #+begin_src shell
 
   alias CLaI='claude -p --model haiku --allowedTools "Bash,Read,Write,Edit,Glob" --max-turns 5 '
 
 #+end_src
 
+* Master session
+
+Launch (or reattach to) the persistent master Claude session in tmux.
+Workers spawn as additional windows in the same =claude= session.
+
+#+begin_src shell
+
+  alias cmaster='tmux has-session -t claude 2>/dev/null && tmux -u attach-session -t claude || (tmux -u new-session -d -s claude -n master "cd ~ && claude" && tmux new-window -t claude -n cworkers "cworkers" && tmux select-window -t claude:master && tmux -u attach-session -t claude)'
+  alias cworkers='~/ClaudeBrain/bin/cworkers'
+  alias spawn-local='~/ClaudeBrain/bin/spawn-local'
+  alias spawn-cmslpc='~/ClaudeBrain/bin/spawn-cmslpc'
+  alias spawn-falcon='~/ClaudeBrain/bin/spawn-falcon'
+
+#+end_src
+  
 ** Local
 
 #+begin_src shell :tangle (if (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu")  (string= (system-name) "16inMachine")) "~/dotfiles/.aliases" "no")
@@ -89,11 +104,11 @@ Uses Haiku for speed; whitelists common filesystem tools; caps at 5 agentic turn
   
 #+begin_src shell :tangle (if (not (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu"))) "~/dotfiles/.aliases" "no")
 
-  alias nemacs='/usr/bin/emacs -nw'
-  alias nemcas='/usr/bin/emacs -nw'
-  alias neamcs='/usr/bin/emacs -nw'
-  alias nemasc='/usr/bin/emacs -nw'
-  alias neamsc='/usr/bin/emacs -nw'
+  alias nemacs='~/.local/bin/emacs -nw'
+  alias nemcas='~/.local/bin/emacs -nw'
+  alias neamcs='~/.local/bin/emacs -nw'
+  alias nemasc='~/.local/bin/emacs -nw'
+  alias neamsc='~/.local/bin/emacs -nw'
   #alias emacs="open -a /Applications/Emacs.app"
   alias emcas='emacs'
   alias eamcs='emacs'
@@ -118,6 +133,7 @@ CMU/CMS
 #+begin_src shell
 
   alias lxplus='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus.cern.ch'
+  alias lxplus-totp='kinitCERN && TOTP=$(gpg --quiet --for-your-eyes-only --no-tty -d ~/.authinfo.gpg 2>/dev/null | grep bitwarden | awk '"'"'{print $NF}'"'"' | (read PW; BW_SESSION=$(bw unlock "$PW" --raw 2>/dev/null); bw get totp "login.cern.ch" --session "$BW_SESSION" 2>/dev/null)); expect -c "spawn ssh -oGSSAPIDelegateCredentials=yes lxplus.cern.ch echo ok; expect \"2nd factor\" { send \"$TOTP\r\" }; expect eof"' 
   alias cmslpc='ssh -Y  jda102@cmslpc-el9.fnal.gov'
   alias falcon="ssh jalison@falcon.phys.cmu.edu"
   alias falcon10200="ssh -XY -L  10200:localhost:10200 jalison@falcon.phys.cmu.edu"
@@ -134,7 +150,10 @@ CMU/CMS
 
   alias cmslpcgpu1='ssh -XY jda102@cmslpcgpu1.fnal.gov'
   alias cmslpcgpu2='ssh -XY jda102@cmslpcgpu2.fnal.gov'
-  alias cmslpcgpu3='ssh -XY jda102@cmslpcgpu3.fnal.gov'    
+  alias cmslpcgpu3='ssh -XY jda102@cmslpcgpu3.fnal.gov'
+
+  alias snkmt-console='ssh -t jda102@cmslpc-el9.fnal.gov "cd /uscms/home/jda102/nobackup/HH4b/Run3/barista && ~/.pixi/bin/pixi run snkmt console"'
+  alias barista-console='ssh -t jda102@cmslpc-el9.fnal.gov "cd /uscms/home/jda102/nobackup/HH4b/Run3/barista && ~/.pixi/bin/pixi run python src/tools/barista_console.py"'
 
 
   alias cleanroom="ssh pi@172.26.197.92"
@@ -267,4 +286,31 @@ CMU/CMS
 #+end_src
 
 
+* MAC Summary
 
+Queries the HGCal module assembly database on lxplus for a given month/year,
+reporting counts for CMU, TTU, and UCSB MACs.
+
+Usage: =mac_counts [month] [year]=
+- With no arguments, defaults to the current month and year.
+- Example: =mac_counts 3 2026=
+
+Requires an active lxplus SSH session (see =lxplus= alias, which copies the
+TOTP from Bitwarden to the clipboard before connecting). Uses the ControlMaster
+socket so no re-authentication is needed once a session is open.
+
+#+begin_src shell
+
+ mac_counts() {
+    local month=${1:-$(date +%-m)}
+    local year=${2:-$(date +%Y)}
+    ssh lxplus.cern.ch "
+      source HGCDB/HGC_DB_postgres/HGCDB_env/bin/activate &&
+      python3 HGCDB/HGC_DB_postgres/mac_public/module_counts_for_month.py -m $month -y $year -mac CMU &&
+      python3 HGCDB/HGC_DB_postgres/mac_public/module_counts_for_month.py -m $month -y $year -mac TTU &&
+      python3 HGCDB/HGC_DB_postgres/mac_public/module_counts_for_month.py -m $month -y $year -mac UCSB
+    "
+  }
+
+  
+#+end_src
