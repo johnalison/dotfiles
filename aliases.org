@@ -75,6 +75,9 @@ Workers spawn as additional windows in the same =claude= session.
 
   alias cmaster='tmux has-session -t claude 2>/dev/null && tmux -u attach-session -t claude || (tmux -u new-session -d -s claude -n master "cd ~ && claude" && tmux new-window -t claude -n cworkers "cworkers" && tmux select-window -t claude:master && tmux -u attach-session -t claude)'
   alias cworkers='~/ClaudeBrain/bin/cworkers'
+  alias spawn-local='~/ClaudeBrain/bin/spawn-local'
+  alias spawn-cmslpc='~/ClaudeBrain/bin/spawn-cmslpc'
+  alias spawn-falcon='~/ClaudeBrain/bin/spawn-falcon'
 
 #+end_src
   
@@ -127,7 +130,7 @@ Workers spawn as additional windows in the same =claude= session.
 CMU/CMS
 
 #+begin_src shell
- 
+
   alias lxplus='ssh -Y -oGSSAPIDelegateCredentials=yes lxplus.cern.ch'
   alias lxplus-totp='kinitCERN && TOTP=$(gpg --quiet --for-your-eyes-only --no-tty -d ~/.authinfo.gpg 2>/dev/null | grep bitwarden | awk '"'"'{print $NF}'"'"' | (read PW; BW_SESSION=$(bw unlock "$PW" --raw 2>/dev/null); bw get totp "login.cern.ch" --session "$BW_SESSION" 2>/dev/null)); expect -c "spawn ssh -oGSSAPIDelegateCredentials=yes lxplus.cern.ch echo ok; expect \"2nd factor\" { send \"$TOTP\r\" }; expect eof"' 
   alias cmslpc='ssh -Y  jda102@cmslpc-el9.fnal.gov'
@@ -147,8 +150,9 @@ CMU/CMS
   alias cmslpcgpu1='ssh -XY jda102@cmslpcgpu1.fnal.gov'
   alias cmslpcgpu2='ssh -XY jda102@cmslpcgpu2.fnal.gov'
   alias cmslpcgpu3='ssh -XY jda102@cmslpcgpu3.fnal.gov'
- 
-  alias barista-console='ssh -t jda102@cmslpc-el9.fnal.gov "cd /uscms/home/jda102/nobackup/HH4b/Run3/barista && ~/.pixi/bin/pixi run snkmt console"'
+
+  alias snkmt-console='ssh -t jda102@cmslpc-el9.fnal.gov "cd /uscms/home/jda102/nobackup/HH4b/Run3/barista && ~/.pixi/bin/pixi run snkmt console"'
+  alias barista-console='ssh -t jda102@cmslpc-el9.fnal.gov "cd /uscms/home/jda102/nobackup/HH4b/Run3/barista && ~/.pixi/bin/pixi run python src/tools/barista_console.py"'
 
 
   alias cleanroom="ssh pi@172.26.197.92"

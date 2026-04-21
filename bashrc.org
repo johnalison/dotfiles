@@ -76,24 +76,14 @@
 
 
 
-* Set-up git tab complete
+* Set-up bash completion (git, make, etc.)
 
 #+begin_src shell
 
-  if [ -f /usr/local/etc/bash_completion ]; then
-      . /usr/local/etc/bash_completion
+  if [ -f "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
+      . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
   fi
-    
-#+end_src
 
-#+begin_src shell
-
-  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion || {
-      # if not found in /usr/local/etc, try the brew --prefix location
-      [ -f "$(brew --prefix)/etc/bash_completion.d/git-completion.bash" ] && \
-          . $(brew --prefix)/etc/bash_completion.d/git-completion.bash
-  }
-    
 #+end_src
 
 
