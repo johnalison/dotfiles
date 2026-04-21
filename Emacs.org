@@ -840,7 +840,7 @@ The `dired' package is the built-in file manager of Emacs.
       :straight nil              ;; dired is built-in
       :bind (:map dired-mode-map
                   ("b" . dired-up-directory))
-      :custom ((insert-directory-program "gls")
+      :custom ((insert-directory-program (if (eq system-type 'darwin) "gls" "ls"))
     	   (dired-listing-switches "-agho --group-directories-first")
     	   ;;(dired-dwim-target t)
     	   ;;(dired-recursive-copies 'always)

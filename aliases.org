@@ -100,11 +100,11 @@ Workers spawn as additional windows in the same =claude= session.
   
 #+begin_src shell :tangle (if (not (or (string= (system-name) "16inMachine.local") (string= (system-name) "16inmachine.wifi.local.cmu.edu"))) "~/dotfiles/.aliases" "no")
 
-  alias nemacs='/usr/bin/emacs -nw'
-  alias nemcas='/usr/bin/emacs -nw'
-  alias neamcs='/usr/bin/emacs -nw'
-  alias nemasc='/usr/bin/emacs -nw'
-  alias neamsc='/usr/bin/emacs -nw'
+  alias nemacs='~/.local/bin/emacs -nw'
+  alias nemcas='~/.local/bin/emacs -nw'
+  alias neamcs='~/.local/bin/emacs -nw'
+  alias nemasc='~/.local/bin/emacs -nw'
+  alias neamsc='~/.local/bin/emacs -nw'
   #alias emacs="open -a /Applications/Emacs.app"
   alias emcas='emacs'
   alias eamcs='emacs'
