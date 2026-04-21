@@ -27,7 +27,8 @@
     alias grep='grep --color'
     alias procs='ps aux|grep johnda'
     alias lsrt='ls -lrt'
-    
+    alias fixcursor="printf '\e[?25h'"
+
 #+end_src
 
 
